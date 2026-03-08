@@ -1,5 +1,5 @@
-/** Minimum transaction amount: 10,000 NIS */
-export const MIN_TRANSACTION = 10_000;
+/** Minimum transaction amount: 0 NIS (amount must be > 0 for a transfer) */
+export const MIN_TRANSACTION = 0;
 
 /** Maximum single transaction: 20,000,000 NIS */
 export const MAX_TRANSACTION = 20_000_000;
@@ -59,11 +59,11 @@ export function parseAmountInput(input: string): number | null {
 export function validateAmount(
   amount: number
 ): { valid: true } | { valid: false; error: string } {
-  if (amount < MIN_TRANSACTION) {
-    return { valid: false, error: `הסכום המינימלי הוא ${formatAmount(MIN_TRANSACTION)}` };
+  if (amount <= MIN_TRANSACTION) {
+    return { valid: false, error: "הסכום חייב להיות גדול מ-0" };
   }
   if (amount > MAX_TRANSACTION) {
-    return { valid: false, error: `הסכום המקסימלי הוא ${formatAmount(MAX_TRANSACTION)}` };
+    return { valid: false, error: `הסכום המקסימלי הוא ${formatAmount(MAX_TRANSACTION)} (20M)` };
   }
   return { valid: true };
 }

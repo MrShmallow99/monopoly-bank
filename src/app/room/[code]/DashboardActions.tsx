@@ -10,8 +10,6 @@ import {
   validateAmount,
   PASS_GO_AMOUNT,
   getBankId,
-  MIN_TRANSACTION,
-  MAX_TRANSACTION,
 } from "@/lib/currency";
 
 type Props = {
@@ -34,6 +32,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
   const [reviveAmountStr, setReviveAmountStr] = useState("");
   const [revivePlayerId, setRevivePlayerId] = useState("");
   const [transferValidationError, setTransferValidationError] = useState("");
+  const [amountValidationError, setAmountValidationError] = useState("");
   const [loading, setLoading] = useState(false);
 
   function clearModal() {
@@ -43,6 +42,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
     setReviveAmountStr("");
     setRevivePlayerId("");
     setTransferValidationError("");
+    setAmountValidationError("");
     onError("");
   }
 
@@ -89,23 +89,24 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
     setTransferValidationError("");
     const amount = parseAmountInput(amountStr);
     if (amount === null) {
-      onError(`הזן סכום בין ${formatAmount(MIN_TRANSACTION)} ל־${formatAmount(MAX_TRANSACTION)} (למשל 1.5M או 500K)`);
+      setAmountValidationError("הזן סכום (הסכום חייב להיות בין 0 ל-20M)");
       return;
     }
     const validation = validateAmount(amount);
     if (!validation.valid) {
-      onError(validation.error);
+      setAmountValidationError("הסכום חורג מהמגבלות");
       return;
     }
     if (!allowDebt && currentPlayer.balance < amount) {
-      onError("אין מספיק יתרה. במשחק זה לא ניתן להיכנס למינוס.");
+      setAmountValidationError("אין מספיק יתרה. במשחק זה לא ניתן להיכנס למינוס.");
       return;
     }
     const toPlayer = otherPlayers.find((p) => p.id === transferToId);
     if (!toPlayer) {
-      onError("שחקן לא נמצא.");
+      setAmountValidationError("שחקן לא נמצא.");
       return;
     }
+    setAmountValidationError("");
     setLoading(true);
     onError("");
     try {
@@ -143,18 +144,19 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
   async function handlePayBank() {
     const amount = parseAmountInput(amountStr);
     if (amount === null) {
-      onError(`הזן סכום בין ${formatAmount(MIN_TRANSACTION)} ל־${formatAmount(MAX_TRANSACTION)}`);
+      setAmountValidationError("הזן סכום (הסכום חייב להיות בין 0 ל-20M)");
       return;
     }
     const validation = validateAmount(amount);
     if (!validation.valid) {
-      onError(validation.error);
+      setAmountValidationError("הסכום חורג מהמגבלות");
       return;
     }
     if (!allowDebt && currentPlayer.balance < amount) {
-      onError("אין מספיק יתרה. במשחק זה לא ניתן להיכנס למינוס.");
+      setAmountValidationError("אין מספיק יתרה. במשחק זה לא ניתן להיכנס למינוס.");
       return;
     }
+    setAmountValidationError("");
     setLoading(true);
     onError("");
     try {
@@ -188,14 +190,15 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
   async function handleReceiveFromBank() {
     const amount = parseAmountInput(amountStr);
     if (amount === null) {
-      onError(`הזן סכום בין ${formatAmount(MIN_TRANSACTION)} ל־${formatAmount(MAX_TRANSACTION)}`);
+      setAmountValidationError("הזן סכום (הסכום חייב להיות בין 0 ל-20M)");
       return;
     }
     const validation = validateAmount(amount);
     if (!validation.valid) {
-      onError(validation.error);
+      setAmountValidationError("הסכום חורג מהמגבלות");
       return;
     }
+    setAmountValidationError("");
     setLoading(true);
     onError("");
     try {
@@ -442,7 +445,12 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
                 </p>
               )}
             </div>
-            <SmartAmountInput value={amountStr} onChange={setAmountStr} />
+            <SmartAmountInput value={amountStr} onChange={(v) => { setAmountStr(v); setAmountValidationError(""); }} />
+            {amountValidationError && (
+              <p className="text-sm text-amber-600 dark:text-amber-400 font-medium" role="alert">
+                {amountValidationError}
+              </p>
+            )}
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
@@ -468,7 +476,12 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       {modal === "payBank" && (
         <Modal title="שלם לבנק" onClose={clearModal}>
           <div className="space-y-4">
-            <SmartAmountInput value={amountStr} onChange={setAmountStr} />
+            <SmartAmountInput value={amountStr} onChange={(v) => { setAmountStr(v); setAmountValidationError(""); }} />
+            {amountValidationError && (
+              <p className="text-sm text-amber-600 dark:text-amber-400 font-medium" role="alert">
+                {amountValidationError}
+              </p>
+            )}
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
@@ -494,7 +507,12 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       {modal === "receiveBank" && (
         <Modal title="קבל מהבנק" onClose={clearModal}>
           <div className="space-y-4">
-            <SmartAmountInput value={amountStr} onChange={setAmountStr} />
+            <SmartAmountInput value={amountStr} onChange={(v) => { setAmountStr(v); setAmountValidationError(""); }} />
+            {amountValidationError && (
+              <p className="text-sm text-amber-600 dark:text-amber-400 font-medium" role="alert">
+                {amountValidationError}
+              </p>
+            )}
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
@@ -600,7 +618,7 @@ function SmartAmountInput({ value, onChange }: { value: string; onChange: (s: st
           </button>
         </div>
       </div>
-      <p className="text-xs text-gray-500 dark:text-gray-400">מינימום {formatAmount(MIN_TRANSACTION)}, מקסימום {formatAmount(MAX_TRANSACTION)}</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400">הסכום חייב להיות בין 0 ל-20M</p>
       <p className={`text-sm font-medium py-2 px-3 rounded-lg tabular-nums ${parsed != null ? "bg-monopoly-green/10 dark:bg-monopoly-green/20 text-monopoly-green-dark dark:text-monopoly-green-light" : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"}`}>
         {previewText}
       </p>
