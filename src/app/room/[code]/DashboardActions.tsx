@@ -315,12 +315,12 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
         <button
           type="button"
           onClick={() => { playButton(); handlePassGo(); }}
           disabled={loading}
-          className="col-span-2 py-4 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-semibold text-lg disabled:opacity-50 transition-colors border border-monopoly-green-light/30"
+          className="col-span-2 py-3 sm:py-4 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-semibold text-base sm:text-lg disabled:opacity-50 transition-colors border border-monopoly-green-light/30"
         >
           עברתי בדרך צלחה <span className="text-monopoly-gold-light dark:text-monopoly-gold">+{formatAmount(PASS_GO_AMOUNT)}</span>
         </button>
@@ -328,7 +328,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
           type="button"
           onClick={() => { playButton(); setModal("transfer"); }}
           disabled={loading}
-          className="py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium disabled:opacity-50 transition-colors"
+          className="py-2.5 sm:py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium text-sm sm:text-base disabled:opacity-50 transition-colors"
         >
           העבר לשחקן
         </button>
@@ -336,7 +336,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
           type="button"
           onClick={() => { playButton(); setModal("payBank"); }}
           disabled={loading}
-          className="py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium disabled:opacity-50 transition-colors"
+          className="py-2.5 sm:py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium text-sm sm:text-base disabled:opacity-50 transition-colors"
         >
           שלם לבנק
         </button>
@@ -344,7 +344,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
           type="button"
           onClick={() => { playButton(); setModal("receiveBank"); }}
           disabled={loading}
-          className="py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium disabled:opacity-50 transition-colors"
+          className="py-2.5 sm:py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium text-sm sm:text-base disabled:opacity-50 transition-colors"
         >
           קבל מהבנק
         </button>
@@ -352,7 +352,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
           type="button"
           onClick={() => setModal("bankruptConfirm")}
           disabled={loading}
-          className="col-span-2 py-3 rounded-xl border-2 border-red-400 dark:border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 font-medium hover:bg-red-100 dark:hover:bg-red-900/30 disabled:opacity-50 transition-colors"
+          className="col-span-2 py-2.5 sm:py-3 rounded-xl border-2 border-red-400 dark:border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 font-medium text-sm sm:text-base hover:bg-red-100 dark:hover:bg-red-900/30 disabled:opacity-50 transition-colors"
         >
           פשיטת רגל
         </button>
@@ -360,7 +360,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
 
       {/* Host: Manage players / Revive & End Game */}
       {currentPlayer.is_banker && (
-        <div className="mt-6 rounded-2xl border border-monopoly-light-border dark:border-monopoly-green/30 bg-monopoly-light-card dark:bg-monopoly-dark-card p-4 space-y-4">
+        <div className="mt-3 sm:mt-6 rounded-2xl border border-monopoly-light-border dark:border-monopoly-green/30 bg-monopoly-light-card dark:bg-monopoly-dark-card p-3 sm:p-4 space-y-3 sm:space-y-4">
           <h3 className="text-base font-semibold text-gray-900 dark:text-white">ניהול משחק (מארח)</h3>
           {bankruptPlayers.length > 0 && (
             <div className="space-y-2">

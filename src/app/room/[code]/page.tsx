@@ -195,9 +195,9 @@ export default function RoomPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col bg-monopoly-light-bg dark:bg-monopoly-dark pb-safe">
-      <header className="bg-monopoly-light-card dark:bg-monopoly-dark-card border-b border-monopoly-light-border dark:border-monopoly-green/30 px-4 py-4 safe-top">
-        <div className="flex justify-between items-center mb-2">
+    <main className="h-svh min-h-0 flex flex-col bg-monopoly-light-bg dark:bg-monopoly-dark pb-safe overflow-hidden">
+      <header className="shrink-0 bg-monopoly-light-card dark:bg-monopoly-dark-card border-b border-monopoly-light-border dark:border-monopoly-green/30 px-3 py-3 sm:px-4 sm:py-4 safe-top">
+        <div className="flex justify-between items-center mb-1 sm:mb-2">
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -231,9 +231,9 @@ export default function RoomPage() {
             )}
           </div>
         </div>
-        <div className="text-center py-2">
-          <p className="text-gray-500 dark:text-gray-400 text-sm mb-1">יתרה נוכחית</p>
-          <p className="text-2xl sm:text-3xl font-bold text-monopoly-green dark:text-monopoly-green-light tabular-nums">
+        <div className="text-center py-1.5 sm:py-2">
+          <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mb-0.5">יתרה נוכחית</p>
+          <p className="text-xl sm:text-2xl md:text-3xl font-bold text-monopoly-green dark:text-monopoly-green-light tabular-nums">
             {formatAmountExact(player.balance)} <span className="text-lg text-gray-600 dark:text-gray-500 font-normal">ש&quot;ח</span>
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
@@ -243,11 +243,11 @@ export default function RoomPage() {
       </header>
 
       {error && (
-        <div className="mx-4 mt-2 rounded-xl bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 px-4 py-2 text-sm">
+        <div className="shrink-0 mx-3 mt-1.5 sm:mt-2 sm:mx-4 rounded-xl bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">
           {error}
         </div>
       )}
-      <section className="flex-1 p-4 overflow-auto">
+      <section className="shrink-0 px-3 py-2 sm:p-4">
         <DashboardActions
           room={room}
           currentPlayer={player}
@@ -305,6 +305,7 @@ export default function RoomPage() {
         transactions={transactions}
         players={players}
         currentPlayerId={player.id}
+        className="flex-1 min-h-0 flex flex-col min-w-0"
       />
     </main>
   );
