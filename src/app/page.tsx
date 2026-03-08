@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 function generateRoomCode(): string {
   const len = 4 + Math.floor(Math.random() * 3);
@@ -116,13 +117,13 @@ export default function HomePage() {
 
   if (!isSupabaseConfigured()) {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-monopoly-dark">
+      <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-monopoly-light-bg dark:bg-monopoly-dark">
         <div className="max-w-md text-center space-y-4">
-          <h1 className="text-2xl font-bold text-monopoly-gold">מונופול כרטיס אשראי</h1>
-          <p className="text-gray-400">
-            יש להגדיר Supabase: צור קובץ <code className="bg-monopoly-dark-card px-2 py-1 rounded">.env.local</code> עם
-            <code className="block mt-2 bg-monopoly-dark-card px-2 py-1 rounded text-right">NEXT_PUBLIC_SUPABASE_URL</code> ו־
-            <code className="block mt-1 bg-monopoly-dark-card px-2 py-1 rounded text-right">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>
+          <h1 className="text-2xl font-bold text-monopoly-green dark:text-monopoly-gold">מונופול כרטיס אשראי</h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            יש להגדיר Supabase: צור קובץ <code className="bg-monopoly-light-card dark:bg-monopoly-dark-card px-2 py-1 rounded border border-monopoly-light-border dark:border-monopoly-green/30">.env.local</code> עם
+            <code className="block mt-2 bg-monopoly-light-card dark:bg-monopoly-dark-card px-2 py-1 rounded text-right border border-monopoly-light-border dark:border-monopoly-green/30">NEXT_PUBLIC_SUPABASE_URL</code> ו־
+            <code className="block mt-1 bg-monopoly-light-card dark:bg-monopoly-dark-card px-2 py-1 rounded text-right border border-monopoly-light-border dark:border-monopoly-green/30">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>
           </p>
         </div>
       </main>
@@ -130,33 +131,36 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-monopoly-dark to-monopoly-green-dark">
+    <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-monopoly-light-bg to-monopoly-light-border dark:from-monopoly-dark dark:to-monopoly-green-dark">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="w-full max-w-md space-y-8">
         <header className="text-center">
-          <h1 className="text-3xl font-bold text-monopoly-gold mb-2">
+          <h1 className="text-3xl font-bold text-monopoly-green dark:text-monopoly-gold mb-2">
             מונופול כרטיס אשראי
           </h1>
-          <p className="text-monopoly-green-light/90 text-lg">
+          <p className="text-monopoly-green-dark dark:text-monopoly-green-light/90 text-lg">
             בנק אלקטרוני
           </p>
         </header>
 
-        <div className="bg-monopoly-dark-card rounded-2xl p-6 shadow-xl border border-monopoly-green/30 space-y-6">
+        <div className="bg-monopoly-light-card dark:bg-monopoly-dark-card rounded-2xl p-6 shadow-xl border border-monopoly-light-border dark:border-monopoly-green/30 space-y-6">
           {error && (
-            <div className="bg-red-900/40 text-red-200 rounded-xl px-4 py-3 text-sm">
+            <div className="bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 rounded-xl px-4 py-3 text-sm">
               {error}
             </div>
           )}
 
           <section>
-            <h2 className="text-lg font-semibold text-white mb-3">צור חדר חדש</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">צור חדר חדש</h2>
             <div className="flex gap-2">
               <input
                 type="text"
                 placeholder="השם שלך"
                 value={createName}
                 onChange={(e) => setCreateName(e.target.value)}
-                className="flex-1 rounded-xl bg-monopoly-dark border border-monopoly-green/50 px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-monopoly-green"
+                className="flex-1 rounded-xl bg-white dark:bg-monopoly-dark border border-monopoly-light-border dark:border-monopoly-green/50 px-4 py-3 text-gray-900 dark:text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-monopoly-green"
                 disabled={!!loading}
               />
               <button
@@ -170,8 +174,8 @@ export default function HomePage() {
             </div>
           </section>
 
-          <div className="border-t border-monopoly-green/30 pt-6">
-            <h2 className="text-lg font-semibold text-white mb-3">הצטרף לחדר</h2>
+          <div className="border-t border-monopoly-light-border dark:border-monopoly-green/30 pt-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">הצטרף לחדר</h2>
             <form onSubmit={handleJoinRoom} className="space-y-3">
               <input
                 type="text"
@@ -179,7 +183,7 @@ export default function HomePage() {
                 placeholder="קוד חדר (4–6 ספרות)"
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                className="w-full rounded-xl bg-monopoly-dark border border-monopoly-green/50 px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-monopoly-green"
+                className="w-full rounded-xl bg-white dark:bg-monopoly-dark border border-monopoly-light-border dark:border-monopoly-green/50 px-4 py-3 text-gray-900 dark:text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-monopoly-green"
                 maxLength={6}
                 disabled={!!loading}
               />
@@ -188,7 +192,7 @@ export default function HomePage() {
                 placeholder="השם שלך"
                 value={joinName}
                 onChange={(e) => setJoinName(e.target.value)}
-                className="w-full rounded-xl bg-monopoly-dark border border-monopoly-green/50 px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-monopoly-green"
+                className="w-full rounded-xl bg-white dark:bg-monopoly-dark border border-monopoly-light-border dark:border-monopoly-green/50 px-4 py-3 text-gray-900 dark:text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-monopoly-green"
                 disabled={!!loading}
               />
               <button
@@ -202,7 +206,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <p className="text-center text-gray-500 text-sm">
+        <p className="text-center text-gray-600 dark:text-gray-500 text-sm">
           המטבע: ש&quot;ח • יתרה התחלתית 15M • מינימום העברה 10K • מקסימום 20M
         </p>
       </div>

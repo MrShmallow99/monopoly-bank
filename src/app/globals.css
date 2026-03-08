@@ -13,10 +13,6 @@ html {
   direction: rtl;
 }
 
-body {
-  @apply bg-monopoly-dark text-white antialiased min-h-screen;
-}
-
 /* Hebrew-friendly font stack */
 @layer base {
   body {
@@ -29,7 +25,7 @@ body {
   width: 6px;
 }
 .ledger-scroll::-webkit-scrollbar-track {
-  @apply bg-monopoly-dark-card rounded;
+  @apply bg-monopoly-light-card dark:bg-monopoly-dark-card rounded;
 }
 .ledger-scroll::-webkit-scrollbar-thumb {
   @apply bg-monopoly-green rounded;

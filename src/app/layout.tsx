@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Assistant } from "next/font/google";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
 const assistant = Assistant({
@@ -19,8 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="he" dir="rtl" className={assistant.variable}>
-      <body className={`${assistant.className} font-sans`}>{children}</body>
+    <html lang="he" dir="rtl" className={assistant.variable} suppressHydrationWarning>
+      <body className={`${assistant.className} font-sans bg-monopoly-light-bg dark:bg-monopoly-dark text-gray-900 dark:text-white antialiased min-h-screen transition-colors`}>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }

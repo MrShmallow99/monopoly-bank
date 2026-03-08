@@ -33,6 +33,14 @@ export function formatAmount(amount: number): string {
 }
 
 /**
+ * Format amount as exact number with comma separators (e.g. 15,020,000).
+ * Use for primary balance display so every digit is visible.
+ */
+export function formatAmountExact(amount: number): string {
+  return amount.toLocaleString("he-IL");
+}
+
+/**
  * Parse user input (e.g. "1.5M", "500K") to number.
  */
 export function parseAmountInput(input: string): number | null {

@@ -18,15 +18,15 @@ export function Ledger({ transactions, players, currentPlayerId }: Props) {
   };
 
   return (
-    <section className="bg-monopoly-dark-card border-t border-monopoly-green/30 flex flex-col max-h-[40vh] safe-bottom">
-      <h2 className="px-4 py-3 text-sm font-semibold text-gray-400 sticky top-0 bg-monopoly-dark-card border-b border-monopoly-green/20">
+    <section className="bg-monopoly-light-card dark:bg-monopoly-dark-card border-t border-monopoly-light-border dark:border-monopoly-green/30 flex flex-col max-h-[40vh] safe-bottom">
+      <h2 className="px-4 py-3 text-sm font-semibold text-gray-500 dark:text-gray-400 sticky top-0 bg-monopoly-light-card dark:bg-monopoly-dark-card border-b border-monopoly-light-border dark:border-monopoly-green/20">
         היסטוריית פעולות
       </h2>
       <div className="overflow-y-auto ledger-scroll flex-1 min-h-0">
         {transactions.length === 0 ? (
-          <p className="p-4 text-gray-500 text-sm text-center">אין פעולות עדיין</p>
+          <p className="p-4 text-gray-500 dark:text-gray-400 text-sm text-center">אין פעולות עדיין</p>
         ) : (
-          <ul className="divide-y divide-monopoly-green/10">
+          <ul className="divide-y divide-monopoly-light-border dark:divide-monopoly-green/10">
             {transactions.map((tx) => (
               <LedgerItem
                 key={tx.id}
@@ -71,7 +71,7 @@ function LedgerItem({
   return (
     <li
       className={`px-4 py-3 text-sm ${
-        isIncoming ? "text-monopoly-green-light" : isOutgoing ? "text-red-300/90" : "text-gray-300"
+        isIncoming ? "text-monopoly-green dark:text-monopoly-green-light" : isOutgoing ? "text-red-600 dark:text-red-300/90" : "text-gray-600 dark:text-gray-300"
       }`}
     >
       {text}

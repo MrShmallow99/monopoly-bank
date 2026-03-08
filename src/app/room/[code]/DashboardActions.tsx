@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import type { Player } from "@/lib/database.types";
 import {
   formatAmount,
+  formatAmountExact,
   parseAmountInput,
   validateAmount,
   PASS_GO_AMOUNT,
@@ -197,13 +198,13 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
           disabled={loading}
           className="col-span-2 py-4 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-semibold text-lg disabled:opacity-50 transition-colors border border-monopoly-green-light/30"
         >
-          עברתי בדרך צלחה <span className="text-monopoly-gold">+{formatAmount(PASS_GO_AMOUNT)}</span>
+          עברתי בדרך צלחה <span className="text-monopoly-gold-light dark:text-monopoly-gold">+{formatAmount(PASS_GO_AMOUNT)}</span>
         </button>
         <button
           type="button"
           onClick={() => setModal("transfer")}
           disabled={loading}
-          className="py-3 rounded-xl bg-monopoly-dark-card border border-monopoly-green/50 hover:border-monopoly-green text-white font-medium disabled:opacity-50 transition-colors"
+          className="py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium disabled:opacity-50 transition-colors"
         >
           העבר לשחקן
         </button>
@@ -211,7 +212,7 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
           type="button"
           onClick={() => setModal("payBank")}
           disabled={loading}
-          className="py-3 rounded-xl bg-monopoly-dark-card border border-monopoly-green/50 hover:border-monopoly-green text-white font-medium disabled:opacity-50 transition-colors"
+          className="py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium disabled:opacity-50 transition-colors"
         >
           שלם לבנק
         </button>
@@ -219,7 +220,7 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
           type="button"
           onClick={() => setModal("receiveBank")}
           disabled={loading}
-          className="py-3 rounded-xl bg-monopoly-dark-card border border-monopoly-green/50 hover:border-monopoly-green text-white font-medium disabled:opacity-50 transition-colors"
+          className="py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium disabled:opacity-50 transition-colors"
         >
           קבל מהבנק
         </button>
@@ -230,11 +231,11 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
         <Modal title="העבר לשחקן" onClose={clearModal}>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm text-gray-400 mb-1">לשחקן</label>
+              <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1">לשחקן</label>
               <select
                 value={transferToId}
                 onChange={(e) => setTransferToId(e.target.value)}
-                className="w-full rounded-xl bg-monopoly-dark border border-monopoly-green/50 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-monopoly-green"
+                className="w-full rounded-xl bg-white dark:bg-monopoly-dark border border-monopoly-light-border dark:border-monopoly-green/50 px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-monopoly-green"
               >
                 <option value="">בחר שחקן</option>
                 {otherPlayers.map((p) => (
@@ -244,12 +245,12 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
                 ))}
               </select>
             </div>
-            <AmountInput value={amountStr} onChange={setAmountStr} />
+            <SmartAmountInput value={amountStr} onChange={setAmountStr} />
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
                 onClick={clearModal}
-                className="flex-1 py-3 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800"
+                className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 ביטול
               </button>
@@ -270,12 +271,12 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
       {modal === "payBank" && (
         <Modal title="שלם לבנק" onClose={clearModal}>
           <div className="space-y-4">
-            <AmountInput value={amountStr} onChange={setAmountStr} />
+            <SmartAmountInput value={amountStr} onChange={setAmountStr} />
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
                 onClick={clearModal}
-                className="flex-1 py-3 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800"
+                className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 ביטול
               </button>
@@ -296,12 +297,12 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
       {modal === "receiveBank" && (
         <Modal title="קבל מהבנק" onClose={clearModal}>
           <div className="space-y-4">
-            <AmountInput value={amountStr} onChange={setAmountStr} />
+            <SmartAmountInput value={amountStr} onChange={setAmountStr} />
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
                 onClick={clearModal}
-                className="flex-1 py-3 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800"
+                className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 ביטול
               </button>
@@ -333,15 +334,15 @@ function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60" onClick={onClose}>
       <div
-        className="w-full max-w-sm bg-monopoly-dark-card rounded-t-2xl sm:rounded-2xl border-t sm:border border-monopoly-green/30 p-6 shadow-xl"
+        className="w-full max-w-sm bg-monopoly-light-card dark:bg-monopoly-dark-card rounded-t-2xl sm:rounded-2xl border-t sm:border border-monopoly-light-border dark:border-monopoly-green/30 p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold text-white">{title}</h3>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h3>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-800 text-gray-400"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400"
             aria-label="סגור"
           >
             ✕
@@ -353,19 +354,59 @@ function Modal({
   );
 }
 
-function AmountInput({ value, onChange }: { value: string; onChange: (s: string) => void }) {
+/** Strip existing M/K suffix from input for appending a new one */
+function stripSuffix(s: string): string {
+  return s.trim().replace(/\s*[MKmk]$/, "").trim();
+}
+
+function SmartAmountInput({ value, onChange }: { value: string; onChange: (s: string) => void }) {
+  const applySuffix = (suffix: "M" | "K") => {
+    const base = stripSuffix(value);
+    if (!base) {
+      onChange(suffix === "M" ? "1M" : "1K");
+      return;
+    }
+    onChange(base + suffix);
+  };
+
+  const parsed = parseAmountInput(value);
+  const previewText = parsed != null
+    ? `סכום סופי: ${formatAmountExact(parsed)} ש"ח`
+    : "הזן מספר ולחץ M או K";
+
   return (
-    <div>
-      <label className="block text-sm text-gray-400 mb-1">סכום (ש&quot;ח)</label>
-      <input
-        type="text"
-        inputMode="decimal"
-        placeholder="למשל 1.5M או 500K"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl bg-monopoly-dark border border-monopoly-green/50 px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-monopoly-green"
-      />
-      <p className="text-xs text-gray-500 mt-1">מינימום {formatAmount(MIN_TRANSACTION)}, מקסימום {formatAmount(MAX_TRANSACTION)}</p>
+    <div className="space-y-2">
+      <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1">סכום (ש&quot;ח)</label>
+      <div className="flex gap-2">
+        <input
+          type="text"
+          inputMode="decimal"
+          placeholder="למשל 1.5 או 50"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="flex-1 rounded-xl bg-white dark:bg-monopoly-dark border border-monopoly-light-border dark:border-monopoly-green/50 px-4 py-3 text-gray-900 dark:text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-monopoly-green"
+        />
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={() => applySuffix("M")}
+            className="px-3 py-3 rounded-xl bg-monopoly-green/20 dark:bg-monopoly-green/30 text-monopoly-green dark:text-monopoly-green-light font-bold hover:bg-monopoly-green/30 dark:hover:bg-monopoly-green/50 transition-colors border border-monopoly-green/40"
+          >
+            M
+          </button>
+          <button
+            type="button"
+            onClick={() => applySuffix("K")}
+            className="px-3 py-3 rounded-xl bg-monopoly-green/20 dark:bg-monopoly-green/30 text-monopoly-green dark:text-monopoly-green-light font-bold hover:bg-monopoly-green/30 dark:hover:bg-monopoly-green/50 transition-colors border border-monopoly-green/40"
+          >
+            K
+          </button>
+        </div>
+      </div>
+      <p className="text-xs text-gray-500 dark:text-gray-400">מינימום {formatAmount(MIN_TRANSACTION)}, מקסימום {formatAmount(MAX_TRANSACTION)}</p>
+      <p className={`text-sm font-medium py-2 px-3 rounded-lg tabular-nums ${parsed != null ? "bg-monopoly-green/10 dark:bg-monopoly-green/20 text-monopoly-green-dark dark:text-monopoly-green-light" : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"}`}>
+        {previewText}
+      </p>
     </div>
   );
 }

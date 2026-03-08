@@ -4,7 +4,8 @@ import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Player, Room, Transaction } from "@/lib/database.types";
-import { formatAmount } from "@/lib/currency";
+import { formatAmount, formatAmountExact } from "@/lib/currency";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { DashboardActions } from "./DashboardActions";
 import { Ledger } from "./Ledger";
 
@@ -117,16 +118,16 @@ export default function RoomPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-4 bg-monopoly-dark">
-        <p className="text-monopoly-green-light">טוען...</p>
+      <main className="min-h-screen flex items-center justify-center p-4 bg-monopoly-light-bg dark:bg-monopoly-dark">
+        <p className="text-monopoly-green dark:text-monopoly-green-light">טוען...</p>
       </main>
     );
   }
 
   if (error || !room || !player) {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-monopoly-dark">
-        <p className="text-red-400 mb-4">{error || "שגיאה"}</p>
+      <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-monopoly-light-bg dark:bg-monopoly-dark">
+        <p className="text-red-600 dark:text-red-400 mb-4">{error || "שגיאה"}</p>
         <a
           href="/"
           className="px-4 py-2 rounded-xl bg-monopoly-green text-white hover:bg-monopoly-green-light"
@@ -140,22 +141,28 @@ export default function RoomPage() {
   const otherPlayers = players.filter((p) => p.id !== player.id);
 
   return (
-    <main className="min-h-screen flex flex-col bg-monopoly-dark pb-safe">
-      <header className="bg-monopoly-dark-card border-b border-monopoly-green/30 px-4 py-4 safe-top">
+    <main className="min-h-screen flex flex-col bg-monopoly-light-bg dark:bg-monopoly-dark pb-safe">
+      <header className="bg-monopoly-light-card dark:bg-monopoly-dark-card border-b border-monopoly-light-border dark:border-monopoly-green/30 px-4 py-4 safe-top">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-400 text-sm">חדר #{room.code}</span>
-          <span className="text-monopoly-gold font-medium">{player.name}</span>
+          <span className="text-gray-500 dark:text-gray-400 text-sm">חדר #{room.code}</span>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <span className="text-monopoly-green dark:text-monopoly-gold font-medium">{player.name}</span>
+          </div>
         </div>
         <div className="text-center py-2">
-          <p className="text-gray-400 text-sm mb-1">יתרה נוכחית</p>
-          <p className="text-3xl font-bold text-monopoly-green-light">
-            {formatAmount(player.balance)} <span className="text-lg text-gray-500">ש&quot;ח</span>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mb-1">יתרה נוכחית</p>
+          <p className="text-2xl sm:text-3xl font-bold text-monopoly-green dark:text-monopoly-green-light tabular-nums">
+            {formatAmountExact(player.balance)} <span className="text-lg text-gray-600 dark:text-gray-500 font-normal">ש&quot;ח</span>
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            ({formatAmount(player.balance)})
           </p>
         </div>
       </header>
 
       {error && (
-        <div className="mx-4 mt-2 rounded-xl bg-red-900/40 text-red-200 px-4 py-2 text-sm">
+        <div className="mx-4 mt-2 rounded-xl bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 px-4 py-2 text-sm">
           {error}
         </div>
       )}

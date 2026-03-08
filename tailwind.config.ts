@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -17,6 +18,9 @@ const config: Config = {
           "gold-light": "#e6c04a",
           dark: "#1a1a1a",
           "dark-card": "#242424",
+          "light-bg": "#f0f7f2",
+          "light-card": "#ffffff",
+          "light-border": "#c5e1c8",
         },
       },
       fontFamily: {
