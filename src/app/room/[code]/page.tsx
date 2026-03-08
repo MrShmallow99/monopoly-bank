@@ -173,7 +173,7 @@ export default function RoomPage() {
   const otherPlayers = players.filter((p) => p.id !== player.id);
   const isGameActive = room.is_active !== false;
   const isBanker = player.is_banker === true;
-  const [soundEnabled, setSoundEnabled] = useSoundPreference();
+  const [soundEnabled, setSoundEnabled, soundMounted] = useSoundPreference();
 
   async function confirmEndGame() {
     if (!supabase || !room?.id) return;
@@ -196,9 +196,9 @@ export default function RoomPage() {
               type="button"
               onClick={() => setSoundEnabled(!soundEnabled)}
               className="p-2 rounded-lg border border-monopoly-light-border dark:border-monopoly-green/40 text-gray-600 dark:text-gray-400 hover:bg-monopoly-light-bg dark:hover:bg-monopoly-green/10 transition-colors"
-              aria-label={soundEnabled ? "כבה צלילים" : "הפעל צלילים"}
+              aria-label={soundMounted ? (soundEnabled ? "כבה צלילים" : "הפעל צלילים") : "צלילים"}
             >
-              {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+              {soundMounted ? (soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />) : <Volume2 className="w-5 h-5" />}
             </button>
             <ThemeToggle />
             <span className="text-monopoly-green dark:text-monopoly-gold font-medium">{player.name}</span>

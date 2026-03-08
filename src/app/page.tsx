@@ -15,7 +15,7 @@ function generateRoomCode(): string {
 
 export default function HomePage() {
   const router = useRouter();
-  const [soundEnabled, setSoundEnabled] = useSoundPreference();
+  const [soundEnabled, setSoundEnabled, soundMounted] = useSoundPreference();
   const [joinCode, setJoinCode] = useState("");
   const [joinName, setJoinName] = useState("");
   const [createName, setCreateName] = useState("");
@@ -153,12 +153,22 @@ export default function HomePage() {
 
         <div className="bg-monopoly-light-card dark:bg-monopoly-dark-card rounded-2xl p-6 shadow-xl border border-monopoly-light-border dark:border-monopoly-green/30 space-y-6">
           <label className="flex items-center justify-center gap-2 py-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={soundEnabled}
-              onChange={(e) => setSoundEnabled(e.target.checked)}
-              className="rounded border-monopoly-green text-monopoly-green focus:ring-monopoly-green w-4 h-4"
-            />
+            {soundMounted ? (
+              <input
+                type="checkbox"
+                checked={soundEnabled}
+                onChange={(e) => setSoundEnabled(e.target.checked)}
+                className="rounded border-monopoly-green text-monopoly-green focus:ring-monopoly-green w-4 h-4"
+              />
+            ) : (
+              <input
+                type="checkbox"
+                defaultChecked
+                disabled
+                className="rounded border-monopoly-green text-monopoly-green w-4 h-4 opacity-70"
+                aria-hidden
+              />
+            )}
             <span className="text-sm font-medium text-gray-800 dark:text-gray-200">הפעל צלילים</span>
           </label>
 
