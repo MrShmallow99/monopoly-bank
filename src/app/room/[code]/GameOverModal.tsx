@@ -1,11 +1,19 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import type { Player } from "@/lib/database.types";
 import { formatAmountExact, formatAmount } from "@/lib/currency";
+import { clearRoomSession } from "@/lib/roomSession";
 
-type Props = { players: Player[] };
+type Props = { players: Player[]; roomCode: string };
 
-export function GameOverModal({ players }: Props) {
+export function GameOverModal({ players, roomCode }: Props) {
+  const router = useRouter();
+
+  function handleBackToHome() {
+    clearRoomSession(roomCode);
+    router.push("/");
+  }
   const ranked = [...players]
     .filter((p) => !p.is_bankrupt)
     .sort((a, b) => b.balance - a.balance);
@@ -40,12 +48,13 @@ export function GameOverModal({ players }: Props) {
             פשטו רגל: {bankrupt.map((p) => p.name).join(", ")}
           </p>
         )}
-        <a
-          href="/"
-          className="mt-6 block w-full py-3 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-medium text-center"
+        <button
+          type="button"
+          onClick={handleBackToHome}
+          className="mt-6 w-full py-3 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-medium"
         >
-          חזרה לדף הבית
-        </a>
+          חזור למסך הראשי
+        </button>
       </div>
     </div>
   );

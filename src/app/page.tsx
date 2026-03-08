@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { setRoomPlayerId } from "@/lib/roomSession";
@@ -23,6 +23,12 @@ export default function HomePage() {
   const [allowDebt, setAllowDebt] = useState(false);
   const [loading, setLoading] = useState<"create" | "join" | null>(null);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isSupabaseConfigured() && supabase) {
+      void supabase.rpc("cleanup_stale_rooms").then(() => {}, () => {});
+    }
+  }, []);
 
   async function handleCreateRoom() {
     if (!createName.trim()) {
@@ -72,6 +78,7 @@ export default function HomePage() {
         return;
       }
       setRoomPlayerId(code, player.id);
+      void supabase!.rpc("cleanup_stale_rooms").then(() => {}, () => {});
       router.push(`/room/${code}?player=${player.id}`);
     } catch {
       setError("משהו השתבש. נסה שוב.");

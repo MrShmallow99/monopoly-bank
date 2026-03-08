@@ -16,6 +16,7 @@ export interface Database {
           created_at: string;
           allow_debt: boolean;
           is_active: boolean;
+          ended_at: string | null;
         };
         Insert: {
           id?: string;
@@ -23,6 +24,7 @@ export interface Database {
           created_at?: string;
           allow_debt?: boolean;
           is_active?: boolean;
+          ended_at?: string | null;
         };
         Update: {
           id?: string;
@@ -30,6 +32,7 @@ export interface Database {
           created_at?: string;
           allow_debt?: boolean;
           is_active?: boolean;
+          ended_at?: string | null;
         };
       };
       players: {

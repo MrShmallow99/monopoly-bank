@@ -365,7 +365,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       }
       const { error: upErr } = await supabase
         .from("rooms")
-        .update({ is_active: false })
+        .update({ is_active: false, ended_at: new Date().toISOString() })
         .eq("id", roomId);
       if (upErr) showErrorOnly("סיום המשחק נכשל. נסה שוב.");
       else clearModal();

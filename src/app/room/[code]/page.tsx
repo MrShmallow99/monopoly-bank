@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Player, Room, Transaction } from "@/lib/database.types";
 import { formatAmount, formatAmountExact, getBankId } from "@/lib/currency";
-import { getRoomPlayerId } from "@/lib/roomSession";
+import { getRoomPlayerId, clearRoomSession } from "@/lib/roomSession";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { toast } from "sonner";
 import { DashboardActions } from "./DashboardActions";
@@ -64,6 +64,14 @@ export default function RoomPage() {
         return;
       }
 
+      const endedAt = roomData.ended_at ? new Date(roomData.ended_at).getTime() : null;
+      if (endedAt && Date.now() - endedAt > 15 * 60 * 1000) {
+        await supabase.rpc("cleanup_stale_rooms").then(() => {}, () => {});
+        clearRoomSession(code);
+        router.replace("/");
+        return;
+      }
+
       const { data: playerData, error: playerErr } = await supabase
         .from("players")
         .select("*")
@@ -79,6 +87,7 @@ export default function RoomPage() {
         ...roomData,
         allow_debt: roomData.allow_debt ?? false,
         is_active: roomData.is_active ?? true,
+        ended_at: roomData.ended_at ?? null,
       } as Room);
       setPlayer({ ...playerData, is_bankrupt: playerData.is_bankrupt ?? false } as Player);
 
@@ -167,7 +176,7 @@ export default function RoomPage() {
         (payload) => {
           if (payload.eventType === "UPDATE" && payload.new) {
             const r = payload.new as Room;
-            setRoom({ ...r, allow_debt: r.allow_debt ?? false, is_active: r.is_active ?? true });
+            setRoom({ ...r, allow_debt: r.allow_debt ?? false, is_active: r.is_active ?? true, ended_at: r.ended_at ?? null });
           }
         }
       )
@@ -216,7 +225,10 @@ export default function RoomPage() {
     if (!supabase || !room?.id) return;
     setEndGameLoading(true);
     try {
-      const { error: upErr } = await supabase.from("rooms").update({ is_active: false }).eq("id", room.id);
+      const { error: upErr } = await supabase
+        .from("rooms")
+        .update({ is_active: false, ended_at: new Date().toISOString() })
+        .eq("id", room.id);
       if (!upErr) setShowEndGameConfirm(false);
     } finally {
       setEndGameLoading(false);
@@ -298,7 +310,7 @@ export default function RoomPage() {
       </div>
 
       {!isGameActive && (
-        <GameOverModal players={players} />
+        <GameOverModal players={players} roomCode={code} />
       )}
 
       {showPlayersModal && (

@@ -34,3 +34,12 @@ export function setRoomPlayerId(roomCode: string, playerId: string): void {
     // ignore
   }
 }
+
+export function clearRoomSession(roomCode: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(key(roomCode));
+  } catch {
+    // ignore
+  }
+}
