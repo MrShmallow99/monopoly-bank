@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useSoundPreference } from "@/hooks/useSoundPreference";
 
 function generateRoomCode(): string {
   const len = 4 + Math.floor(Math.random() * 3);
@@ -14,6 +15,7 @@ function generateRoomCode(): string {
 
 export default function HomePage() {
   const router = useRouter();
+  const [soundEnabled, setSoundEnabled] = useSoundPreference();
   const [joinCode, setJoinCode] = useState("");
   const [joinName, setJoinName] = useState("");
   const [createName, setCreateName] = useState("");
@@ -150,6 +152,16 @@ export default function HomePage() {
         </header>
 
         <div className="bg-monopoly-light-card dark:bg-monopoly-dark-card rounded-2xl p-6 shadow-xl border border-monopoly-light-border dark:border-monopoly-green/30 space-y-6">
+          <label className="flex items-center justify-center gap-2 py-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={soundEnabled}
+              onChange={(e) => setSoundEnabled(e.target.checked)}
+              className="rounded border-monopoly-green text-monopoly-green focus:ring-monopoly-green w-4 h-4"
+            />
+            <span className="text-sm font-medium text-gray-800 dark:text-gray-200">הפעל צלילים</span>
+          </label>
+
           {error && (
             <div className="bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 rounded-xl px-4 py-3 text-sm">
               {error}

@@ -1,6 +1,7 @@
 /**
  * Sound playback using new Audio() per call so sounds can overlap.
  * Safe for SSR: no-op when window is undefined.
+ * Respects user preference in localStorage (monopoly-sound-enabled).
  */
 
 const SOUNDS = {
@@ -9,8 +10,18 @@ const SOUNDS = {
   transferPlus: "/sounds/transfer_plus.mp3",
 } as const;
 
+const STORAGE_KEY = "monopoly-sound-enabled";
+
+function isSoundEnabled(): boolean {
+  if (typeof window === "undefined") return false;
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored === null) return true;
+  return stored !== "false";
+}
+
 function play(src: string): void {
   if (typeof window === "undefined") return;
+  if (!isSoundEnabled()) return;
   try {
     const audio = new Audio(src);
     audio.play().catch(() => {});

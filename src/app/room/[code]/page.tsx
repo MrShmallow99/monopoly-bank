@@ -12,6 +12,8 @@ import { Ledger } from "./Ledger";
 import { GameOverModal } from "./GameOverModal";
 import { PlayersModal, UsersIcon } from "./PlayersModal";
 import { playTransferPlus } from "@/lib/sounds";
+import { useSoundPreference } from "@/hooks/useSoundPreference";
+import { Volume2, VolumeX } from "lucide-react";
 
 export default function RoomPage() {
   const params = useParams();
@@ -171,6 +173,7 @@ export default function RoomPage() {
   const otherPlayers = players.filter((p) => p.id !== player.id);
   const isGameActive = room.is_active !== false;
   const isBanker = player.is_banker === true;
+  const [soundEnabled, setSoundEnabled] = useSoundPreference();
 
   async function confirmEndGame() {
     if (!supabase || !room?.id) return;
@@ -189,6 +192,14 @@ export default function RoomPage() {
         <div className="flex justify-between items-center mb-2">
           <span className="text-gray-500 dark:text-gray-400 text-sm">חדר #{room.code}</span>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              className="p-2 rounded-lg border border-monopoly-light-border dark:border-monopoly-green/40 text-gray-600 dark:text-gray-400 hover:bg-monopoly-light-bg dark:hover:bg-monopoly-green/10 transition-colors"
+              aria-label={soundEnabled ? "כבה צלילים" : "הפעל צלילים"}
+            >
+              {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+            </button>
             <ThemeToggle />
             <span className="text-monopoly-green dark:text-monopoly-gold font-medium">{player.name}</span>
             {isBanker && isGameActive && (
