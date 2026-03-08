@@ -17,6 +17,7 @@ export default function HomePage() {
   const [joinCode, setJoinCode] = useState("");
   const [joinName, setJoinName] = useState("");
   const [createName, setCreateName] = useState("");
+  const [allowDebt, setAllowDebt] = useState(false);
   const [loading, setLoading] = useState<"create" | "join" | null>(null);
   const [error, setError] = useState("");
 
@@ -42,11 +43,12 @@ export default function HomePage() {
       }
       const { data: room, error: roomErr } = await supabase!
         .from("rooms")
-        .insert({ code })
+        .insert({ code, allow_debt: allowDebt, is_active: true })
         .select("id")
         .single();
       if (roomErr || !room) {
         setError("יצירת החדר נכשלה. נסה שוב.");
+        setLoading(null);
         return;
       }
       const { data: player, error: playerErr } = await supabase!
@@ -55,19 +57,20 @@ export default function HomePage() {
           room_id: room.id,
           name: createName.trim(),
           balance: 15_000_000,
-          is_banker: false,
+          is_banker: true,
+          is_bankrupt: false,
         })
         .select("id")
         .single();
       if (playerErr || !player) {
         await supabase!.from("rooms").delete().eq("id", room.id);
         setError("יצירת החדר נכשלה. נסה שוב.");
+        setLoading(null);
         return;
       }
       router.push(`/room/${code}?player=${player.id}`);
     } catch {
       setError("משהו השתבש. נסה שוב.");
-    } finally {
       setLoading(null);
     }
   }
@@ -99,6 +102,7 @@ export default function HomePage() {
           name: joinName.trim(),
           balance: 15_000_000,
           is_banker: false,
+          is_bankrupt: false,
         })
         .select("id")
         .single();
@@ -154,6 +158,15 @@ export default function HomePage() {
 
           <section>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">צור חדר חדש</h2>
+            <label className="flex items-center gap-2 mb-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={allowDebt}
+                onChange={(e) => setAllowDebt(e.target.checked)}
+                className="rounded border-monopoly-green text-monopoly-green focus:ring-monopoly-green w-4 h-4"
+              />
+              <span className="text-sm text-gray-700 dark:text-gray-300">אפשר כניסה למינוס (משחק עם חובות)</span>
+            </label>
             <div className="flex gap-2">
               <input
                 type="text"

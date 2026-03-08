@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import type { Player } from "@/lib/database.types";
+import type { Player, Room } from "@/lib/database.types";
 import {
   formatAmount,
   formatAmountExact,
@@ -15,30 +15,45 @@ import {
 } from "@/lib/currency";
 
 type Props = {
-  roomId: string;
+  room: Room;
   currentPlayer: Player;
-  otherPlayers: Player[];
+  players: Player[];
   onError: (msg: string) => void;
 };
 
-export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError }: Props) {
-  const [modal, setModal] = useState<"transfer" | "payBank" | "receiveBank" | null>(null);
+export function DashboardActions({ room, currentPlayer, players, onError }: Props) {
+  const roomId = room.id;
+  const allowDebt = room.allow_debt === true;
+  const isGameActive = room.is_active !== false;
+  const otherPlayers = players.filter((p) => p.id !== currentPlayer.id);
+  const bankruptPlayers = players.filter((p) => p.is_bankrupt === true);
+
+  const [modal, setModal] = useState<"transfer" | "payBank" | "receiveBank" | "bankruptConfirm" | null>(null);
   const [transferToId, setTransferToId] = useState("");
   const [amountStr, setAmountStr] = useState("");
+  const [reviveAmountStr, setReviveAmountStr] = useState("");
+  const [revivePlayerId, setRevivePlayerId] = useState("");
   const [loading, setLoading] = useState(false);
 
   function clearModal() {
     setModal(null);
     setTransferToId("");
     setAmountStr("");
+    setReviveAmountStr("");
+    setRevivePlayerId("");
     onError("");
   }
 
+  function showErrorOnly(msg: string) {
+    onError(msg);
+    setLoading(false);
+  }
+
   async function handlePassGo() {
+    if (!supabase) return;
     setLoading(true);
     onError("");
     try {
-      if (!supabase) return;
       const { error: txErr } = await supabase.from("transactions").insert({
         room_id: roomId,
         from_player: getBankId(),
@@ -46,15 +61,19 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
         amount: PASS_GO_AMOUNT,
         description: "דרך צלחה",
       });
-      if (txErr) throw txErr;
+      if (txErr) {
+        showErrorOnly("הפעולה נכשלה. נסה שוב.");
+        return;
+      }
       const newBalance = currentPlayer.balance + PASS_GO_AMOUNT;
       const { error: upErr } = await supabase
         .from("players")
         .update({ balance: newBalance })
         .eq("id", currentPlayer.id);
-      if (upErr) throw upErr;
-    } catch (e) {
-      onError("הפעולה נכשלה. נסה שוב.");
+      if (upErr) showErrorOnly("הפעולה נכשלה. נסה שוב.");
+      else clearModal();
+    } catch {
+      showErrorOnly("הפעולה נכשלה. נסה שוב.");
     } finally {
       setLoading(false);
     }
@@ -75,8 +94,8 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
       onError(validation.error);
       return;
     }
-    if (currentPlayer.balance < amount) {
-      onError("אין מספיק יתרה.");
+    if (!allowDebt && currentPlayer.balance < amount) {
+      onError("אין מספיק יתרה. במשחק זה לא ניתן להיכנס למינוס.");
       return;
     }
     const toPlayer = otherPlayers.find((p) => p.id === transferToId);
@@ -87,7 +106,10 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
     setLoading(true);
     onError("");
     try {
-      if (!supabase) return;
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
       const { error: txErr } = await supabase.from("transactions").insert({
         room_id: roomId,
         from_player: currentPlayer.id,
@@ -95,8 +117,10 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
         amount,
         description: null,
       });
-      if (txErr) throw txErr;
-      if (!supabase) return;
+      if (txErr) {
+        showErrorOnly("ההעברה נכשלה. נסה שוב.");
+        return;
+      }
       await supabase
         .from("players")
         .update({ balance: currentPlayer.balance - amount })
@@ -107,7 +131,7 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
         .eq("id", transferToId);
       clearModal();
     } catch {
-      onError("ההעברה נכשלה. נסה שוב.");
+      showErrorOnly("ההעברה נכשלה. נסה שוב.");
     } finally {
       setLoading(false);
     }
@@ -124,14 +148,17 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
       onError(validation.error);
       return;
     }
-    if (currentPlayer.balance < amount) {
-      onError("אין מספיק יתרה.");
+    if (!allowDebt && currentPlayer.balance < amount) {
+      onError("אין מספיק יתרה. במשחק זה לא ניתן להיכנס למינוס.");
       return;
     }
     setLoading(true);
     onError("");
     try {
-      if (!supabase) return;
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
       const { error: txErr } = await supabase.from("transactions").insert({
         room_id: roomId,
         from_player: currentPlayer.id,
@@ -139,15 +166,17 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
         amount,
         description: "תשלום לבנק",
       });
-      if (txErr) throw txErr;
-      if (!supabase) return;
+      if (txErr) {
+        showErrorOnly("התשלום נכשל. נסה שוב.");
+        return;
+      }
       await supabase
         .from("players")
         .update({ balance: currentPlayer.balance - amount })
         .eq("id", currentPlayer.id);
       clearModal();
     } catch {
-      onError("התשלום נכשל. נסה שוב.");
+      showErrorOnly("התשלום נכשל. נסה שוב.");
     } finally {
       setLoading(false);
     }
@@ -167,7 +196,10 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
     setLoading(true);
     onError("");
     try {
-      if (!supabase) return;
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
       const { error: txErr } = await supabase.from("transactions").insert({
         room_id: roomId,
         from_player: getBankId(),
@@ -175,18 +207,98 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
         amount,
         description: "קבלה מהבנק",
       });
-      if (txErr) throw txErr;
-      if (!supabase) return;
+      if (txErr) {
+        showErrorOnly("הקבלה נכשלה. נסה שוב.");
+        return;
+      }
       await supabase
         .from("players")
         .update({ balance: currentPlayer.balance + amount })
         .eq("id", currentPlayer.id);
       clearModal();
     } catch {
-      onError("הקבלה נכשלה. נסה שוב.");
+      showErrorOnly("הקבלה נכשלה. נסה שוב.");
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleDeclareBankruptcy() {
+    setLoading(true);
+    onError("");
+    try {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+      const { error: upErr } = await supabase
+        .from("players")
+        .update({ balance: 0, is_bankrupt: true })
+        .eq("id", currentPlayer.id);
+      if (upErr) showErrorOnly("פעולת פשיטת רגל נכשלה. נסה שוב.");
+      else clearModal();
+    } catch {
+      showErrorOnly("פעולת פשיטת רגל נכשלה. נסה שוב.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleRevive(playerId: string, amount: number) {
+    setLoading(true);
+    onError("");
+    try {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+      const { error: upErr } = await supabase
+        .from("players")
+        .update({ balance: amount, is_bankrupt: false })
+        .eq("id", playerId);
+      if (upErr) showErrorOnly("ההחזרה לחיים נכשלה. נסה שוב.");
+      else {
+        setRevivePlayerId("");
+        setReviveAmountStr("");
+      }
+    } catch {
+      showErrorOnly("ההחזרה לחיים נכשלה. נסה שוב.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleEndGame() {
+    setLoading(true);
+    onError("");
+    try {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+      const { error: upErr } = await supabase
+        .from("rooms")
+        .update({ is_active: false })
+        .eq("id", roomId);
+      if (upErr) showErrorOnly("סיום המשחק נכשל. נסה שוב.");
+    } catch {
+      showErrorOnly("סיום המשחק נכשל. נסה שוב.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (!isGameActive) {
+    return null;
+  }
+
+  if (currentPlayer.is_bankrupt === true) {
+    return (
+      <div className="rounded-2xl border-2 border-amber-500/50 bg-amber-500/10 dark:bg-amber-500/20 p-6 text-center">
+        <p className="text-lg font-semibold text-amber-700 dark:text-amber-400">פשטת רגל – צופה במשחק</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">ניתן לצפות בהיסטוריית הפעולות למטה</p>
+      </div>
+    );
   }
 
   return (
@@ -224,7 +336,91 @@ export function DashboardActions({ roomId, currentPlayer, otherPlayers, onError 
         >
           קבל מהבנק
         </button>
+        <button
+          type="button"
+          onClick={() => setModal("bankruptConfirm")}
+          disabled={loading}
+          className="col-span-2 py-3 rounded-xl border-2 border-red-400 dark:border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 font-medium hover:bg-red-100 dark:hover:bg-red-900/30 disabled:opacity-50 transition-colors"
+        >
+          פשיטת רגל
+        </button>
       </div>
+
+      {/* Host: Manage players / Revive & End Game */}
+      {currentPlayer.is_banker && (
+        <div className="mt-6 rounded-2xl border border-monopoly-light-border dark:border-monopoly-green/30 bg-monopoly-light-card dark:bg-monopoly-dark-card p-4 space-y-4">
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white">ניהול משחק (מארח)</h3>
+          {bankruptPlayers.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400">החזר לחיים – שחקנים שפשטו רגל:</p>
+              {bankruptPlayers.map((p) => (
+                <div key={p.id} className="flex flex-wrap items-center gap-2">
+                  <span className="text-gray-700 dark:text-gray-300">{p.name}</span>
+                  {revivePlayerId === p.id ? (
+                    <>
+                      <input
+                        type="text"
+                        placeholder="סכום (למשל 5M)"
+                        value={reviveAmountStr}
+                        onChange={(e) => setReviveAmountStr(e.target.value)}
+                        className="flex-1 min-w-[80px] rounded-lg bg-white dark:bg-monopoly-dark border border-monopoly-light-border dark:border-monopoly-green/50 px-3 py-2 text-sm text-gray-900 dark:text-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const amt = parseAmountInput(reviveAmountStr);
+                          if (amt != null && amt >= 0) handleRevive(p.id, amt);
+                          else onError("הזן סכום תקין (למשל 5M).");
+                        }}
+                        disabled={loading}
+                        className="px-3 py-2 rounded-lg bg-monopoly-green text-white text-sm font-medium disabled:opacity-50"
+                      >
+                        החזר לחיים
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setRevivePlayerId(""); setReviveAmountStr(""); }}
+                        className="px-3 py-2 rounded-lg border border-gray-400 dark:border-gray-600 text-sm"
+                      >
+                        ביטול
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => { setRevivePlayerId(p.id); setReviveAmountStr("5M"); }}
+                      className="px-3 py-2 rounded-lg bg-monopoly-green/80 text-white text-sm font-medium hover:bg-monopoly-green"
+                    >
+                      החזר לחיים
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={handleEndGame}
+            disabled={loading}
+            className="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 dark:bg-amber-700 dark:hover:bg-amber-800 text-white font-semibold disabled:opacity-50"
+          >
+            סיום משחק
+          </button>
+        </div>
+      )}
+
+      {/* Modal: Bankruptcy confirm */}
+      {modal === "bankruptConfirm" && (
+        <Modal title="פשיטת רגל" onClose={clearModal}>
+          <div className="space-y-4">
+            <p className="text-gray-600 dark:text-gray-300">האם לפשוט רגל? היתרה תאופס ותצפה במשחק כצופה.</p>
+            <div className="flex gap-2">
+              <button type="button" onClick={clearModal} className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">ביטול</button>
+              <button type="button" onClick={handleDeclareBankruptcy} disabled={loading} className="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium disabled:opacity-50">אישור</button>
+            </div>
+          </div>
+        </Modal>
+      )}
 
       {/* Modal: Transfer to player */}
       {modal === "transfer" && (

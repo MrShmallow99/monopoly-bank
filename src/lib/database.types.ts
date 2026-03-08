@@ -14,16 +14,22 @@ export interface Database {
           id: string;
           code: string;
           created_at: string;
+          allow_debt: boolean;
+          is_active: boolean;
         };
         Insert: {
           id?: string;
           code: string;
           created_at?: string;
+          allow_debt?: boolean;
+          is_active?: boolean;
         };
         Update: {
           id?: string;
           code?: string;
           created_at?: string;
+          allow_debt?: boolean;
+          is_active?: boolean;
         };
       };
       players: {
@@ -33,6 +39,7 @@ export interface Database {
           name: string;
           balance: number;
           is_banker: boolean;
+          is_bankrupt: boolean;
           created_at: string;
         };
         Insert: {
@@ -41,6 +48,7 @@ export interface Database {
           name: string;
           balance?: number;
           is_banker?: boolean;
+          is_bankrupt?: boolean;
           created_at?: string;
         };
         Update: {
@@ -49,6 +57,7 @@ export interface Database {
           name?: string;
           balance?: number;
           is_banker?: boolean;
+          is_bankrupt?: boolean;
           created_at?: string;
         };
       };

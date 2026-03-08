@@ -8,6 +8,7 @@ import { formatAmount, formatAmountExact } from "@/lib/currency";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { DashboardActions } from "./DashboardActions";
 import { Ledger } from "./Ledger";
+import { GameOverModal } from "./GameOverModal";
 
 export default function RoomPage() {
   const params = useParams();
@@ -45,7 +46,11 @@ export default function RoomPage() {
         setLoading(false);
         return;
       }
-      setRoom(roomData);
+      setRoom({
+        ...roomData,
+        allow_debt: roomData.allow_debt ?? false,
+        is_active: roomData.is_active ?? true,
+      } as Room);
 
       const { data: playerData, error: playerErr } = await supabase
         .from("players")
@@ -58,7 +63,7 @@ export default function RoomPage() {
         setLoading(false);
         return;
       }
-      setPlayer(playerData);
+      setPlayer({ ...playerData, is_bankrupt: playerData.is_bankrupt ?? false } as Player);
 
       const { data: playersData } = await supabase
         .from("players")
@@ -100,12 +105,22 @@ export default function RoomPage() {
         { event: "*", schema: "public", table: "players", filter: `room_id=eq.${room.id}` },
         (payload) => {
           if (payload.eventType === "UPDATE" && payload.new) {
-            const updated = payload.new as Player;
+            const updated = { ...payload.new, is_bankrupt: (payload.new as Player).is_bankrupt ?? false } as Player;
             setPlayers((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
             if (updated.id === playerId) setPlayer(updated);
           }
           if (payload.eventType === "INSERT" && payload.new) {
             setPlayers((prev) => [...prev, payload.new as Player]);
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${room.id}` },
+        (payload) => {
+          if (payload.eventType === "UPDATE" && payload.new) {
+            const r = payload.new as Room;
+            setRoom({ ...r, allow_debt: r.allow_debt ?? false, is_active: r.is_active ?? true });
           }
         }
       )
@@ -139,6 +154,7 @@ export default function RoomPage() {
   }
 
   const otherPlayers = players.filter((p) => p.id !== player.id);
+  const isGameActive = room.is_active !== false;
 
   return (
     <main className="min-h-screen flex flex-col bg-monopoly-light-bg dark:bg-monopoly-dark pb-safe">
@@ -168,12 +184,16 @@ export default function RoomPage() {
       )}
       <section className="flex-1 p-4 overflow-auto">
         <DashboardActions
-          roomId={room.id}
+          room={room}
           currentPlayer={player}
-          otherPlayers={otherPlayers}
+          players={players}
           onError={setError}
         />
       </section>
+
+      {!isGameActive && (
+        <GameOverModal players={players} />
+      )}
 
       <Ledger
         transactions={transactions}
