@@ -33,6 +33,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
   const [amountStr, setAmountStr] = useState("");
   const [reviveAmountStr, setReviveAmountStr] = useState("");
   const [revivePlayerId, setRevivePlayerId] = useState("");
+  const [transferValidationError, setTransferValidationError] = useState("");
   const [loading, setLoading] = useState(false);
 
   function clearModal() {
@@ -41,6 +42,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
     setAmountStr("");
     setReviveAmountStr("");
     setRevivePlayerId("");
+    setTransferValidationError("");
     onError("");
   }
 
@@ -80,10 +82,11 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
   }
 
   async function handleTransfer() {
-    if (!transferToId) {
-      onError("נא לבחור שחקן.");
+    if (!transferToId || !transferToId.trim()) {
+      setTransferValidationError("אנא בחר שחקן");
       return;
     }
+    setTransferValidationError("");
     const amount = parseAmountInput(amountStr);
     if (amount === null) {
       onError(`הזן סכום בין ${formatAmount(MIN_TRANSACTION)} ל־${formatAmount(MAX_TRANSACTION)} (למשל 1.5M או 500K)`);
@@ -281,6 +284,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         .update({ is_active: false })
         .eq("id", roomId);
       if (upErr) showErrorOnly("סיום המשחק נכשל. נסה שוב.");
+      else clearModal();
     } catch {
       showErrorOnly("סיום המשחק נכשל. נסה שוב.");
     } finally {
@@ -398,14 +402,6 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
               ))}
             </div>
           )}
-          <button
-            type="button"
-            onClick={handleEndGame}
-            disabled={loading}
-            className="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 dark:bg-amber-700 dark:hover:bg-amber-800 text-white font-semibold disabled:opacity-50"
-          >
-            סיום משחק
-          </button>
         </div>
       )}
 
@@ -430,7 +426,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
               <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1">לשחקן</label>
               <select
                 value={transferToId}
-                onChange={(e) => setTransferToId(e.target.value)}
+                onChange={(e) => { setTransferToId(e.target.value); setTransferValidationError(""); }}
                 className="w-full rounded-xl bg-white dark:bg-monopoly-dark border border-monopoly-light-border dark:border-monopoly-green/50 px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-monopoly-green"
               >
                 <option value="">בחר שחקן</option>
@@ -440,6 +436,11 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
                   </option>
                 ))}
               </select>
+              {transferValidationError && (
+                <p className="mt-2 text-sm text-amber-600 dark:text-amber-400 font-medium" role="alert">
+                  {transferValidationError}
+                </p>
+              )}
             </div>
             <SmartAmountInput value={amountStr} onChange={setAmountStr} />
             <div className="flex gap-2 pt-2">

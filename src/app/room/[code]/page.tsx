@@ -22,6 +22,8 @@ export default function RoomPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showEndGameConfirm, setShowEndGameConfirm] = useState(false);
+  const [endGameLoading, setEndGameLoading] = useState(false);
 
   useEffect(() => {
     if (!code || !playerId) {
@@ -155,6 +157,18 @@ export default function RoomPage() {
 
   const otherPlayers = players.filter((p) => p.id !== player.id);
   const isGameActive = room.is_active !== false;
+  const isBanker = player.is_banker === true;
+
+  async function confirmEndGame() {
+    if (!supabase || !room?.id) return;
+    setEndGameLoading(true);
+    try {
+      const { error: upErr } = await supabase.from("rooms").update({ is_active: false }).eq("id", room.id);
+      if (!upErr) setShowEndGameConfirm(false);
+    } finally {
+      setEndGameLoading(false);
+    }
+  }
 
   return (
     <main className="min-h-screen flex flex-col bg-monopoly-light-bg dark:bg-monopoly-dark pb-safe">
@@ -164,6 +178,15 @@ export default function RoomPage() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <span className="text-monopoly-green dark:text-monopoly-gold font-medium">{player.name}</span>
+            {isBanker && isGameActive && (
+              <button
+                type="button"
+                onClick={() => setShowEndGameConfirm(true)}
+                className="text-sm px-3 py-1 rounded-lg border border-amber-500/60 dark:border-amber-400/60 text-amber-700 dark:text-amber-400 hover:bg-amber-500/10 dark:hover:bg-amber-500/20 transition-colors"
+              >
+                סיום משחק
+              </button>
+            )}
           </div>
         </div>
         <div className="text-center py-2">
@@ -193,6 +216,34 @@ export default function RoomPage() {
 
       {!isGameActive && (
         <GameOverModal players={players} />
+      )}
+
+      {showEndGameConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={() => setShowEndGameConfirm(false)}>
+          <div className="w-full max-w-sm bg-monopoly-light-card dark:bg-monopoly-dark-card rounded-2xl border border-monopoly-light-border dark:border-monopoly-green/30 p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">סיום משחק</h3>
+            <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">
+              האם אתה בטוח שברצונך לסיים את המשחק? פעולה זו תנעל את החדר לכל השחקנים.
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setShowEndGameConfirm(false)}
+                className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium"
+              >
+                ביטול
+              </button>
+              <button
+                type="button"
+                onClick={confirmEndGame}
+                disabled={endGameLoading}
+                className="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium disabled:opacity-50"
+              >
+                {endGameLoading ? "..." : "כן, סיים משחק"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <Ledger
