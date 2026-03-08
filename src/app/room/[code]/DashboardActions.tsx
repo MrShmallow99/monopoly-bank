@@ -14,6 +14,7 @@ import {
   getBankId,
 } from "@/lib/currency";
 import { playButton, playTransferMinus } from "@/lib/sounds";
+import { firePassGoConfetti } from "@/lib/confetti";
 
 type Props = {
   room: Room;
@@ -79,6 +80,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         .eq("id", currentPlayer.id);
       if (upErr) showErrorOnly("הפעולה נכשלה. נסה שוב.");
       else {
+        firePassGoConfetti();
         clearModal();
       }
     } catch {

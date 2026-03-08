@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Player, Room, Transaction } from "@/lib/database.types";
 import { formatAmount, formatAmountExact } from "@/lib/currency";
@@ -13,6 +13,7 @@ import { Ledger } from "./Ledger";
 import { GameOverModal } from "./GameOverModal";
 import { PlayersModal } from "./PlayersModal";
 import { playTransferPlus } from "@/lib/sounds";
+import { fireWinConfetti } from "@/lib/confetti";
 import { useSoundPreference } from "@/hooks/useSoundPreference";
 import { Users, Volume2, VolumeX } from "lucide-react";
 
@@ -33,6 +34,7 @@ export default function RoomPage() {
   const [endGameLoading, setEndGameLoading] = useState(false);
   const [showPlayersModal, setShowPlayersModal] = useState(false);
   const [soundEnabled, setSoundEnabled, soundMounted] = useSoundPreference();
+  const winConfettiFired = useRef(false);
 
   useEffect(() => {
     if (!code || !playerId) {
@@ -187,6 +189,14 @@ export default function RoomPage() {
   const otherPlayers = players.filter((p) => p.id !== player.id);
   const isGameActive = room.is_active !== false;
   const isBanker = player.is_banker === true;
+
+  useEffect(() => {
+    if (!room || !player) return;
+    if (room.is_active !== false) return;
+    if (winConfettiFired.current) return;
+    winConfettiFired.current = true;
+    fireWinConfetti();
+  }, [room, player]);
 
   async function confirmEndGame() {
     if (!supabase || !room?.id) return;

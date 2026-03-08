@@ -30,3 +30,8 @@ html {
 .ledger-scroll::-webkit-scrollbar-thumb {
   @apply bg-monopoly-green rounded;
 }
+
+/* Confetti canvas must not block clicks */
+body > canvas {
+  pointer-events: none;
+}
