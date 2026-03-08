@@ -258,13 +258,13 @@ export default function RoomPage() {
         </section>
       </div>
 
-      <div className="flex-1 min-h-0 flex flex-col">
-        <div className="flex-1 min-h-0" aria-hidden />
+      <div className="flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden">
+        <div className="flex-1 min-h-0 min-w-0" aria-hidden />
         <Ledger
           transactions={transactions}
           players={players}
           currentPlayerId={player.id}
-          className="shrink-0 max-h-full flex flex-col min-h-0 overflow-hidden"
+          className="shrink-0 max-h-full w-full flex flex-col min-h-0 overflow-hidden"
         />
       </div>
 
@@ -312,13 +312,6 @@ export default function RoomPage() {
           </div>
         </div>
       )}
-
-      <Ledger
-        transactions={transactions}
-        players={players}
-        currentPlayerId={player.id}
-        className="flex-1 min-h-0 flex flex-col min-w-0"
-      />
     </main>
   );
 }
