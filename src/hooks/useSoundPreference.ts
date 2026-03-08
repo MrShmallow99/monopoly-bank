@@ -24,8 +24,8 @@ export function useSoundPreference(): [
   (enabled: boolean) => void,
   boolean
 ] {
-  // Default to true without ever touching localStorage during initial render
-  const [enabled, setEnabledState] = useState(true);
+  // Explicit boolean default — never undefined to avoid uncontrolled-to-controlled input warning
+  const [enabled, setEnabledState] = useState<boolean>(true);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

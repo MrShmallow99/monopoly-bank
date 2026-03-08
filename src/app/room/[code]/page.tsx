@@ -31,6 +31,7 @@ export default function RoomPage() {
   const [endGameLoading, setEndGameLoading] = useState(false);
   const [playerJoinedToast, setPlayerJoinedToast] = useState<string | null>(null);
   const [showPlayersModal, setShowPlayersModal] = useState(false);
+  const [soundEnabled, setSoundEnabled, soundMounted] = useSoundPreference();
 
   useEffect(() => {
     if (!code || !playerId) {
@@ -173,7 +174,6 @@ export default function RoomPage() {
   const otherPlayers = players.filter((p) => p.id !== player.id);
   const isGameActive = room.is_active !== false;
   const isBanker = player.is_banker === true;
-  const [soundEnabled, setSoundEnabled, soundMounted] = useSoundPreference();
 
   async function confirmEndGame() {
     if (!supabase || !room?.id) return;
