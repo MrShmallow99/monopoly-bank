@@ -11,6 +11,7 @@ import {
   PASS_GO_AMOUNT,
   getBankId,
 } from "@/lib/currency";
+import { playButton, playTransferMinus } from "@/lib/sounds";
 
 type Props = {
   room: Room;
@@ -73,7 +74,9 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         .update({ balance: newBalance })
         .eq("id", currentPlayer.id);
       if (upErr) showErrorOnly("הפעולה נכשלה. נסה שוב.");
-      else clearModal();
+      else {
+        clearModal();
+      }
     } catch {
       showErrorOnly("הפעולה נכשלה. נסה שוב.");
     } finally {
@@ -133,6 +136,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         .from("players")
         .update({ balance: toPlayer.balance + amount })
         .eq("id", transferToId);
+      playTransferMinus();
       clearModal();
     } catch {
       showErrorOnly("ההעברה נכשלה. נסה שוב.");
@@ -179,6 +183,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         .from("players")
         .update({ balance: currentPlayer.balance - amount })
         .eq("id", currentPlayer.id);
+      playTransferMinus();
       clearModal();
     } catch {
       showErrorOnly("התשלום נכשל. נסה שוב.");
@@ -313,7 +318,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
-          onClick={handlePassGo}
+          onClick={() => { playButton(); handlePassGo(); }}
           disabled={loading}
           className="col-span-2 py-4 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-semibold text-lg disabled:opacity-50 transition-colors border border-monopoly-green-light/30"
         >
@@ -321,7 +326,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         </button>
         <button
           type="button"
-          onClick={() => setModal("transfer")}
+          onClick={() => { playButton(); setModal("transfer"); }}
           disabled={loading}
           className="py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium disabled:opacity-50 transition-colors"
         >
@@ -329,7 +334,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         </button>
         <button
           type="button"
-          onClick={() => setModal("payBank")}
+          onClick={() => { playButton(); setModal("payBank"); }}
           disabled={loading}
           className="py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium disabled:opacity-50 transition-colors"
         >
@@ -337,7 +342,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         </button>
         <button
           type="button"
-          onClick={() => setModal("receiveBank")}
+          onClick={() => { playButton(); setModal("receiveBank"); }}
           disabled={loading}
           className="py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium disabled:opacity-50 transition-colors"
         >
@@ -429,7 +434,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
               <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1">לשחקן</label>
               <select
                 value={transferToId}
-                onChange={(e) => { setTransferToId(e.target.value); setTransferValidationError(""); }}
+                onChange={(e) => { playButton(); setTransferToId(e.target.value); setTransferValidationError(""); }}
                 className="w-full rounded-xl bg-white dark:bg-monopoly-dark border border-monopoly-light-border dark:border-monopoly-green/50 px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-monopoly-green"
               >
                 <option value="">בחר שחקן</option>
@@ -445,7 +450,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
                 </p>
               )}
             </div>
-            <SmartAmountInput value={amountStr} onChange={(v) => { setAmountStr(v); setAmountValidationError(""); }} />
+            <SmartAmountInput value={amountStr} onChange={(v) => { setAmountStr(v); setAmountValidationError(""); }} onButtonClick={playButton} />
             {amountValidationError && (
               <p className="text-sm text-amber-600 dark:text-amber-400 font-medium" role="alert">
                 {amountValidationError}
@@ -454,14 +459,14 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
-                onClick={clearModal}
+                onClick={() => { playButton(); clearModal(); }}
                 className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 ביטול
               </button>
               <button
                 type="button"
-                onClick={handleTransfer}
+                onClick={() => { playButton(); handleTransfer(); }}
                 disabled={loading}
                 className="flex-1 py-3 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-medium disabled:opacity-50"
               >
@@ -476,7 +481,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       {modal === "payBank" && (
         <Modal title="שלם לבנק" onClose={clearModal}>
           <div className="space-y-4">
-            <SmartAmountInput value={amountStr} onChange={(v) => { setAmountStr(v); setAmountValidationError(""); }} />
+            <SmartAmountInput value={amountStr} onChange={(v) => { setAmountStr(v); setAmountValidationError(""); }} onButtonClick={playButton} />
             {amountValidationError && (
               <p className="text-sm text-amber-600 dark:text-amber-400 font-medium" role="alert">
                 {amountValidationError}
@@ -485,14 +490,14 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
-                onClick={clearModal}
+                onClick={() => { playButton(); clearModal(); }}
                 className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 ביטול
               </button>
               <button
                 type="button"
-                onClick={handlePayBank}
+                onClick={() => { playButton(); handlePayBank(); }}
                 disabled={loading}
                 className="flex-1 py-3 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-medium disabled:opacity-50"
               >
@@ -507,7 +512,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       {modal === "receiveBank" && (
         <Modal title="קבל מהבנק" onClose={clearModal}>
           <div className="space-y-4">
-            <SmartAmountInput value={amountStr} onChange={(v) => { setAmountStr(v); setAmountValidationError(""); }} />
+            <SmartAmountInput value={amountStr} onChange={(v) => { setAmountStr(v); setAmountValidationError(""); }} onButtonClick={playButton} />
             {amountValidationError && (
               <p className="text-sm text-amber-600 dark:text-amber-400 font-medium" role="alert">
                 {amountValidationError}
@@ -516,14 +521,14 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
-                onClick={clearModal}
+                onClick={() => { playButton(); clearModal(); }}
                 className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 ביטול
               </button>
               <button
                 type="button"
-                onClick={handleReceiveFromBank}
+                onClick={() => { playButton(); handleReceiveFromBank(); }}
                 disabled={loading}
                 className="flex-1 py-3 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-medium disabled:opacity-50"
               >
@@ -574,8 +579,9 @@ function stripSuffix(s: string): string {
   return s.trim().replace(/\s*[MKmk]$/, "").trim();
 }
 
-function SmartAmountInput({ value, onChange }: { value: string; onChange: (s: string) => void }) {
+function SmartAmountInput({ value, onChange, onButtonClick }: { value: string; onChange: (s: string) => void; onButtonClick?: () => void }) {
   const applySuffix = (suffix: "M" | "K") => {
+    onButtonClick?.();
     const base = stripSuffix(value);
     if (!base) {
       onChange(suffix === "M" ? "1M" : "1K");

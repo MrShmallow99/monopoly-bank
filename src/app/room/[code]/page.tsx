@@ -11,6 +11,7 @@ import { DashboardActions } from "./DashboardActions";
 import { Ledger } from "./Ledger";
 import { GameOverModal } from "./GameOverModal";
 import { PlayersModal, UsersIcon } from "./PlayersModal";
+import { playTransferPlus } from "@/lib/sounds";
 
 export default function RoomPage() {
   const params = useParams();
@@ -102,7 +103,11 @@ export default function RoomPage() {
         { event: "*", schema: "public", table: "transactions", filter: `room_id=eq.${room.id}` },
         (payload) => {
           if (payload.eventType === "INSERT" && payload.new) {
-            setTransactions((prev) => [payload.new as Transaction, ...prev].slice(0, 50));
+            const tx = payload.new as Transaction;
+            setTransactions((prev) => [tx, ...prev].slice(0, 50));
+            if (tx.to_player === playerId) {
+              playTransferPlus();
+            }
           }
         }
       )
