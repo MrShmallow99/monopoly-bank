@@ -152,18 +152,6 @@ export default function HomePage() {
         </header>
 
         <div className="bg-monopoly-light-card dark:bg-monopoly-dark-card rounded-2xl p-6 shadow-xl border border-monopoly-light-border dark:border-monopoly-green/30 space-y-6">
-          <label className="flex items-center justify-center gap-2 py-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={soundMounted ? (soundEnabled ?? true) : true}
-              onChange={soundMounted ? (e) => setSoundEnabled(e.target.checked) : undefined}
-              disabled={!soundMounted}
-              className="rounded border-monopoly-green text-monopoly-green focus:ring-monopoly-green w-4 h-4 disabled:opacity-70"
-              aria-hidden={!soundMounted}
-            />
-            <span className="text-sm font-medium text-gray-800 dark:text-gray-200">הפעל צלילים</span>
-          </label>
-
           {error && (
             <div className="bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 rounded-xl px-4 py-3 text-sm">
               {error}
@@ -172,16 +160,7 @@ export default function HomePage() {
 
           <section>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">צור חדר חדש</h2>
-            <label className="flex items-center gap-2 mb-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={allowDebt}
-                onChange={(e) => setAllowDebt(e.target.checked)}
-                className="rounded border-monopoly-green text-monopoly-green focus:ring-monopoly-green w-4 h-4"
-              />
-              <span className="text-sm text-gray-700 dark:text-gray-300">אפשר כניסה למינוס (משחק עם חובות)</span>
-            </label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 mb-3">
               <input
                 type="text"
                 placeholder="השם שלך"
@@ -199,6 +178,26 @@ export default function HomePage() {
                 {loading === "create" ? "..." : "צור חדר"}
               </button>
             </div>
+            <label className="flex items-center gap-2 mb-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={soundMounted ? (soundEnabled ?? true) : true}
+                onChange={soundMounted ? (e) => setSoundEnabled(e.target.checked) : undefined}
+                disabled={!soundMounted}
+                className="rounded border-monopoly-green text-monopoly-green focus:ring-monopoly-green w-4 h-4 disabled:opacity-70"
+                aria-hidden={!soundMounted}
+              />
+              <span className="text-sm text-gray-700 dark:text-gray-300">הפעל צלילים</span>
+            </label>
+            <label className="flex items-center gap-2 mb-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={allowDebt}
+                onChange={(e) => setAllowDebt(e.target.checked)}
+                className="rounded border-monopoly-green text-monopoly-green focus:ring-monopoly-green w-4 h-4"
+              />
+              <span className="text-sm text-gray-700 dark:text-gray-300">אפשר כניסה למינוס (משחק עם חובות)</span>
+            </label>
           </section>
 
           <div className="border-t border-monopoly-light-border dark:border-monopoly-green/30 pt-6">
