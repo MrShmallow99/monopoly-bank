@@ -344,7 +344,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
     return null;
   }
 
-  if (currentPlayer.is_bankrupt === true) {
+  if (currentPlayer.is_bankrupt === true && !currentPlayer.is_banker) {
     return (
       <div className="rounded-2xl border-2 border-amber-500/50 bg-amber-500/10 dark:bg-amber-500/20 p-6 text-center">
         <p className="text-lg font-semibold text-amber-700 dark:text-amber-400">פשטת רגל – צופה במשחק</p>
@@ -355,7 +355,13 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-2 sm:gap-3">
+      {currentPlayer.is_bankrupt === true ? (
+        <div className="rounded-2xl border-2 border-amber-500/50 bg-amber-500/10 dark:bg-amber-500/20 p-4 text-center mb-4">
+          <p className="text-base font-semibold text-amber-700 dark:text-amber-400">פשטת רגל – מנהל החדר</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">ניתן להחזיר את עצמך או שחקנים אחרים לחיים למטה</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
         <button
           type="button"
           onClick={() => { playButton(); handlePassGo(); }}
@@ -397,6 +403,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
           פשיטת רגל
         </button>
       </div>
+      )}
 
       {/* Host: Manage players / Revive & End Game */}
       {currentPlayer.is_banker && (
