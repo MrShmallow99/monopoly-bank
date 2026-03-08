@@ -4,7 +4,7 @@ import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Player, Room, Transaction } from "@/lib/database.types";
-import { formatAmount, formatAmountExact } from "@/lib/currency";
+import { formatAmount, formatAmountExact, getBankId } from "@/lib/currency";
 import { getRoomPlayerId } from "@/lib/roomSession";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { toast } from "sonner";
@@ -116,7 +116,12 @@ export default function RoomPage() {
             const tx = payload.new as Transaction;
             setTransactions((prev) => [tx, ...prev].slice(0, 50));
             if (tx.to_player === playerId && tx.description !== "פשיטת רגל") {
-              playTransferPlus();
+              const isP2P = tx.from_player !== getBankId();
+              if (isP2P) {
+                setTimeout(playTransferPlus, 1200);
+              } else {
+                playTransferPlus();
+              }
             }
           }
         }
