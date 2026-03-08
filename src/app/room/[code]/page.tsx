@@ -197,19 +197,19 @@ export default function RoomPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-4 bg-monopoly-light-bg dark:bg-monopoly-dark">
-        <p className="text-monopoly-green dark:text-monopoly-green-light">טוען...</p>
+      <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50 dark:bg-slate-900">
+        <p className="text-amber-700 dark:text-amber-400">טוען...</p>
       </main>
     );
   }
 
   if (error || !room || !player) {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-monopoly-light-bg dark:bg-monopoly-dark">
+      <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-slate-50 dark:bg-slate-900">
         <p className="text-red-600 dark:text-red-400 mb-4">{error || "שגיאה"}</p>
         <a
           href="/"
-          className="px-4 py-2 rounded-xl bg-monopoly-green text-white hover:bg-monopoly-green-light"
+          className="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-500"
         >
           חזרה לדף הבית
         </a>
@@ -236,37 +236,37 @@ export default function RoomPage() {
   }
 
   return (
-    <main className="flex flex-col h-[100dvh] min-h-0 overflow-hidden bg-monopoly-light-bg dark:bg-monopoly-dark pb-safe">
+    <main className="flex flex-col h-[100dvh] min-h-0 overflow-hidden bg-slate-50 dark:bg-slate-900 pb-safe">
       <div className="shrink-0">
-        <header className="bg-monopoly-light-card dark:bg-monopoly-dark-card border-b border-monopoly-light-border dark:border-monopoly-green/30 px-3 py-3 sm:px-4 sm:py-4 safe-top">
+        <header className="bg-white dark:bg-slate-800 border-b border-amber-500/40 dark:border-amber-500/50 shadow-sm dark:shadow-none px-3 py-3 sm:px-4 sm:py-4 safe-top">
           <div className="flex justify-between items-center mb-1 sm:mb-2">
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setShowPlayersModal(true)}
-                className="p-2 rounded-lg border border-monopoly-light-border dark:border-monopoly-green/40 text-gray-600 dark:text-gray-400 hover:bg-monopoly-light-bg dark:hover:bg-monopoly-green/10 transition-colors"
+                className="p-2 rounded-lg border border-amber-500/40 dark:border-amber-500/50 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                 aria-label="שחקנים בחדר"
               >
                 <Users className="w-5 h-5" />
               </button>
-              <span className="text-gray-500 dark:text-gray-400 text-sm">חדר #{room.code}</span>
+              <span className="text-slate-600 dark:text-gray-400 text-sm">חדר #{room.code}</span>
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setSoundEnabled(!soundEnabled)}
-                className="p-2 rounded-lg border border-monopoly-light-border dark:border-monopoly-green/40 text-gray-600 dark:text-gray-400 hover:bg-monopoly-light-bg dark:hover:bg-monopoly-green/10 transition-colors"
+                className="p-2 rounded-lg border border-amber-500/40 dark:border-amber-500/50 text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                 aria-label={soundMounted ? (soundEnabled ? "כבה צלילים" : "הפעל צלילים") : "צלילים"}
               >
                 {soundMounted ? (soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />) : <Volume2 className="w-5 h-5" />}
               </button>
               <ThemeToggle />
-              <span className="text-monopoly-green dark:text-monopoly-gold font-medium">{player.name}</span>
+              <span className="text-amber-700 dark:text-amber-400 font-medium">{player.name}</span>
               {isBanker && isGameActive && (
                 <button
                   type="button"
                   onClick={() => setShowEndGameConfirm(true)}
-                  className="text-sm px-3 py-1 rounded-lg border border-amber-500/60 dark:border-amber-400/60 text-amber-700 dark:text-amber-400 hover:bg-amber-500/10 dark:hover:bg-amber-500/20 transition-colors"
+                  className="text-sm px-3 py-1 rounded-lg border border-amber-500/60 text-amber-700 dark:text-amber-400 hover:bg-amber-500/10 dark:hover:bg-amber-500/20 transition-colors"
                 >
                   סיום משחק
                 </button>
@@ -274,18 +274,18 @@ export default function RoomPage() {
             </div>
           </div>
           <div className="text-center py-1.5 sm:py-2">
-            <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mb-0.5">יתרה נוכחית</p>
-            <p className="text-xl sm:text-2xl md:text-3xl font-bold text-monopoly-green dark:text-monopoly-green-light tabular-nums">
-              {formatAmountExact(player.balance)} <span className="text-lg text-gray-600 dark:text-gray-500 font-normal">ש&quot;ח</span>
+            <p className="text-slate-600 dark:text-gray-400 text-xs sm:text-sm mb-0.5">יתרה נוכחית</p>
+            <p className="text-xl sm:text-2xl md:text-3xl font-bold text-amber-600 dark:text-yellow-400 tabular-nums">
+              {formatAmountExact(player.balance)} <span className="text-lg text-slate-600 dark:text-gray-400 font-normal">ש&quot;ח</span>
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            <p className="text-sm text-slate-600 dark:text-gray-400 mt-0.5">
               ({formatAmount(player.balance)})
             </p>
           </div>
         </header>
 
         {error && (
-          <div className="mx-3 mt-1.5 sm:mt-2 sm:mx-4 rounded-xl bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">
+          <div className="mx-3 mt-1.5 sm:mt-2 sm:mx-4 rounded-xl bg-red-50 dark:bg-red-900/40 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-500/50 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">
             {error}
           </div>
         )}
@@ -328,16 +328,16 @@ export default function RoomPage() {
 
       {showEndGameConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={() => setShowEndGameConfirm(false)}>
-          <div className="w-full max-w-sm bg-monopoly-light-card dark:bg-monopoly-dark-card rounded-2xl border border-monopoly-light-border dark:border-monopoly-green/30 p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">סיום משחק</h3>
-            <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">
+          <div className="w-full max-w-sm bg-white dark:bg-slate-800 rounded-2xl border border-amber-500/40 dark:border-amber-500/50 p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">סיום משחק</h3>
+            <p className="text-slate-600 dark:text-gray-300 text-sm mb-6">
               האם אתה בטוח שברצונך לסיים את המשחק? פעולה זו תנעל את החדר לכל השחקנים.
             </p>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setShowEndGameConfirm(false)}
-                className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium"
+                className="flex-1 py-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700 font-medium"
               >
                 ביטול
               </button>

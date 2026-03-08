@@ -382,9 +382,9 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
 
   if (currentPlayer.is_bankrupt === true && !currentPlayer.is_banker) {
     return (
-      <div className="rounded-2xl border-2 border-amber-500/50 bg-amber-500/10 dark:bg-amber-500/20 p-6 text-center">
+      <div className="rounded-2xl border-2 border-amber-500/40 dark:border-amber-500/50 bg-amber-50 dark:bg-amber-500/10 p-6 text-center">
         <p className="text-lg font-semibold text-amber-700 dark:text-amber-400">פשטת רגל – צופה במשחק</p>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">ניתן לצפות בהיסטוריית הפעולות למטה</p>
+        <p className="text-sm text-slate-600 dark:text-gray-400 mt-1">ניתן לצפות בהיסטוריית הפעולות למטה</p>
       </div>
     );
   }
@@ -392,9 +392,9 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
   return (
     <>
       {currentPlayer.is_bankrupt === true ? (
-        <div className="rounded-2xl border-2 border-amber-500/50 bg-amber-500/10 dark:bg-amber-500/20 p-4 text-center mb-4">
+        <div className="rounded-2xl border-2 border-amber-500/40 dark:border-amber-500/50 bg-amber-50 dark:bg-amber-500/10 p-4 text-center mb-4">
           <p className="text-base font-semibold text-amber-700 dark:text-amber-400">פשטת רגל – מנהל החדר</p>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">ניתן להחזיר את עצמך או שחקנים אחרים לחיים למטה</p>
+          <p className="text-sm text-slate-600 dark:text-gray-400 mt-1">ניתן להחזיר את עצמך או שחקנים אחרים לחיים למטה</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
@@ -402,15 +402,15 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
           type="button"
           onClick={() => { playButton(); handlePassGo(); }}
           disabled={loading}
-          className="col-span-2 py-3 sm:py-4 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-semibold text-base sm:text-lg disabled:opacity-50 transition-colors border border-monopoly-green-light/30"
+          className="col-span-2 py-3 sm:py-4 rounded-xl bg-green-600 hover:bg-green-500 text-white font-semibold text-base sm:text-lg disabled:opacity-50 transition-colors border border-green-500/30"
         >
-          עברתי בדרך צלחה <span className="text-monopoly-gold-light dark:text-monopoly-gold">+{formatAmount(PASS_GO_AMOUNT)}</span>
+          עברתי בדרך צלחה <span className="text-amber-200 dark:text-yellow-400">+{formatAmount(PASS_GO_AMOUNT)}</span>
         </button>
         <button
           type="button"
           onClick={() => { playButton(); setModal("transfer"); }}
           disabled={loading}
-          className="py-2.5 sm:py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium text-sm sm:text-base disabled:opacity-50 transition-colors"
+          className="py-2.5 sm:py-3 rounded-xl bg-white dark:bg-slate-800 border border-amber-500/40 dark:border-amber-500/50 hover:border-amber-500 text-slate-900 dark:text-white font-medium text-sm sm:text-base disabled:opacity-50 transition-colors shadow-sm"
         >
           העבר לשחקן
         </button>
@@ -418,7 +418,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
           type="button"
           onClick={() => { playButton(); setModal("payBank"); }}
           disabled={loading}
-          className="py-2.5 sm:py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium text-sm sm:text-base disabled:opacity-50 transition-colors"
+          className="py-2.5 sm:py-3 rounded-xl bg-white dark:bg-slate-800 border border-amber-500/40 dark:border-amber-500/50 hover:border-amber-500 text-slate-900 dark:text-white font-medium text-sm sm:text-base disabled:opacity-50 transition-colors shadow-sm"
         >
           שלם לבנק
         </button>
@@ -426,7 +426,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
           type="button"
           onClick={() => { playButton(); setModal("receiveBank"); }}
           disabled={loading}
-          className="py-2.5 sm:py-3 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/50 hover:border-monopoly-green text-gray-900 dark:text-white font-medium text-sm sm:text-base disabled:opacity-50 transition-colors"
+          className="py-2.5 sm:py-3 rounded-xl bg-white dark:bg-slate-800 border border-amber-500/40 dark:border-amber-500/50 hover:border-amber-500 text-slate-900 dark:text-white font-medium text-sm sm:text-base disabled:opacity-50 transition-colors shadow-sm"
         >
           קבל מהבנק
         </button>
@@ -434,7 +434,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
           type="button"
           onClick={() => setModal("bankruptConfirm")}
           disabled={loading}
-          className="col-span-2 py-2.5 sm:py-3 rounded-xl border-2 border-red-400 dark:border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 font-medium text-sm sm:text-base hover:bg-red-100 dark:hover:bg-red-900/30 disabled:opacity-50 transition-colors"
+          className="col-span-2 py-2.5 sm:py-3 rounded-xl border-2 border-red-500 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 font-medium text-sm sm:text-base hover:bg-red-100 dark:hover:bg-red-900/50 disabled:opacity-50 transition-colors"
         >
           פשיטת רגל
         </button>
@@ -443,11 +443,11 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
 
       {/* Host: Manage players / Revive & End Game */}
       {currentPlayer.is_banker && (
-        <div className="mt-3 sm:mt-6 rounded-2xl border border-monopoly-light-border dark:border-monopoly-green/30 bg-monopoly-light-card dark:bg-monopoly-dark-card p-3 sm:p-4 space-y-3 sm:space-y-4">
-          <h3 className="text-base font-semibold text-gray-900 dark:text-white">ניהול משחק (מארח)</h3>
+        <div className="mt-3 sm:mt-6 rounded-2xl border border-amber-500/40 dark:border-amber-500/50 bg-white dark:bg-slate-800 p-3 sm:p-4 space-y-3 sm:space-y-4 shadow-sm dark:shadow-none">
+          <h3 className="text-base font-semibold text-slate-900 dark:text-white">ניהול משחק (מארח)</h3>
           {bankruptPlayers.length > 0 && (
             <div className="space-y-2">
-              <p className="text-sm text-gray-600 dark:text-gray-400">החזר לחיים – שחקנים שפשטו רגל:</p>
+              <p className="text-sm text-slate-600 dark:text-gray-400">החזר לחיים – שחקנים שפשטו רגל:</p>
               {bankruptPlayers.map((p) => (
                 <button
                   key={p.id}
@@ -459,7 +459,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
                     setReviveValidationError("");
                     setModal("revive");
                   }}
-                  className="w-full text-right px-3 py-2 rounded-lg bg-monopoly-green/80 text-white text-sm font-medium hover:bg-monopoly-green transition-colors"
+                  className="w-full text-right px-3 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-medium transition-colors"
                 >
                   החזר לחיים – {p.name}
                 </button>
@@ -473,9 +473,9 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       {modal === "bankruptConfirm" && (
         <Modal title="פשיטת רגל" onClose={clearModal}>
           <div className="space-y-4">
-            <p className="text-gray-600 dark:text-gray-300">האם לפשוט רגל? היתרה תאופס ותצפה במשחק כצופה.</p>
+            <p className="text-slate-600 dark:text-gray-300">האם לפשוט רגל? היתרה תאופס ותצפה במשחק כצופה.</p>
             <div className="flex gap-2">
-              <button type="button" onClick={clearModal} className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">ביטול</button>
+              <button type="button" onClick={clearModal} className="flex-1 py-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700">ביטול</button>
               <button type="button" onClick={handleDeclareBankruptcy} disabled={loading} className="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium disabled:opacity-50">אישור</button>
             </div>
           </div>
@@ -487,11 +487,11 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         <Modal title="העבר לשחקן" onClose={clearModal}>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1">לשחקן</label>
+              <label className="block text-sm text-slate-600 dark:text-gray-400 mb-1">לשחקן</label>
               <select
                 value={transferToId}
                 onChange={(e) => { playButton(); setTransferToId(e.target.value); setTransferValidationError(""); }}
-                className="w-full rounded-xl bg-white dark:bg-monopoly-dark border border-monopoly-light-border dark:border-monopoly-green/50 px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-monopoly-green"
+                className="w-full rounded-xl bg-slate-50 dark:bg-slate-700 border border-amber-500/40 dark:border-amber-500/50 px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50"
               >
                 <option value="">בחר שחקן</option>
                 {otherPlayers.map((p) => (
@@ -516,7 +516,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
               <button
                 type="button"
                 onClick={() => { playButton(); clearModal(); }}
-                className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="flex-1 py-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 ביטול
               </button>
@@ -524,7 +524,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
                 type="button"
                 onClick={() => { playButton(); handleTransfer(); }}
                 disabled={loading}
-                className="flex-1 py-3 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-medium disabled:opacity-50"
+                className="flex-1 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-medium disabled:opacity-50"
               >
                 {loading ? "..." : "העבר"}
               </button>
@@ -547,7 +547,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
               <button
                 type="button"
                 onClick={() => { playButton(); clearModal(); }}
-                className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="flex-1 py-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 ביטול
               </button>
@@ -555,7 +555,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
                 type="button"
                 onClick={() => { playButton(); handlePayBank(); }}
                 disabled={loading}
-                className="flex-1 py-3 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-medium disabled:opacity-50"
+                className="flex-1 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-medium disabled:opacity-50"
               >
                 {loading ? "..." : "שלם"}
               </button>
@@ -578,7 +578,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
               <button
                 type="button"
                 onClick={() => { playButton(); clearModal(); }}
-                className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="flex-1 py-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 ביטול
               </button>
@@ -586,7 +586,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
                 type="button"
                 onClick={() => { playButton(); handleReceiveFromBank(); }}
                 disabled={loading}
-                className="flex-1 py-3 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-medium disabled:opacity-50"
+                className="flex-1 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-medium disabled:opacity-50"
               >
                 {loading ? "..." : "קבל"}
               </button>
@@ -599,7 +599,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       {modal === "revive" && revivePlayerId && (
         <Modal title="החזר לחיים" onClose={clearModal}>
           <div className="space-y-4">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-slate-600 dark:text-gray-400">
               סכום התחלתי לשחקן {bankruptPlayers.find((p) => p.id === revivePlayerId)?.name ?? ""}:
             </p>
             <SmartAmountInput
@@ -616,7 +616,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
               <button
                 type="button"
                 onClick={() => { playButton(); clearModal(); }}
-                className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="flex-1 py-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 ביטול
               </button>
@@ -637,7 +637,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
                   handleRevive(revivePlayerId, strict.amount);
                 }}
                 disabled={loading}
-                className="flex-1 py-3 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-medium disabled:opacity-50"
+                className="flex-1 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-medium disabled:opacity-50"
               >
                 {loading ? "..." : "החזר לחיים"}
               </button>
@@ -661,15 +661,15 @@ function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60" onClick={onClose}>
       <div
-        className="w-full max-w-sm bg-monopoly-light-card dark:bg-monopoly-dark-card rounded-t-2xl sm:rounded-2xl border-t sm:border border-monopoly-light-border dark:border-monopoly-green/30 p-6 shadow-xl"
+        className="w-full max-w-sm bg-white dark:bg-slate-800 rounded-t-2xl sm:rounded-2xl border-t sm:border border-amber-500/40 dark:border-amber-500/50 p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h3>
+          <h3 className="text-xl font-semibold text-slate-900 dark:text-white">{title}</h3>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400"
+            className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-gray-300"
             aria-label="סגור"
           >
             ✕
@@ -704,7 +704,7 @@ function SmartAmountInput({ value, onChange, onButtonClick }: { value: string; o
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1">סכום (ש&quot;ח)</label>
+      <label className="block text-sm text-slate-600 dark:text-gray-400 mb-1">סכום (ש&quot;ח)</label>
       <div className="flex gap-2">
         <input
           type="text"
@@ -712,27 +712,27 @@ function SmartAmountInput({ value, onChange, onButtonClick }: { value: string; o
           placeholder="למשל 1.5 או 50"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 rounded-xl bg-white dark:bg-monopoly-dark border border-monopoly-light-border dark:border-monopoly-green/50 px-4 py-3 text-gray-900 dark:text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-monopoly-green"
+          className="flex-1 rounded-xl bg-slate-50 dark:bg-slate-700 border border-amber-500/40 dark:border-amber-500/50 px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
         />
         <div className="flex gap-1">
           <button
             type="button"
             onClick={() => applySuffix("M")}
-            className="px-3 py-3 rounded-xl bg-monopoly-green/20 dark:bg-monopoly-green/30 text-monopoly-green dark:text-monopoly-green-light font-bold hover:bg-monopoly-green/30 dark:hover:bg-monopoly-green/50 transition-colors border border-monopoly-green/40"
+            className="px-3 py-3 rounded-xl bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 font-bold hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors border border-amber-500/40 dark:border-amber-500/50"
           >
             M
           </button>
           <button
             type="button"
             onClick={() => applySuffix("K")}
-            className="px-3 py-3 rounded-xl bg-monopoly-green/20 dark:bg-monopoly-green/30 text-monopoly-green dark:text-monopoly-green-light font-bold hover:bg-monopoly-green/30 dark:hover:bg-monopoly-green/50 transition-colors border border-monopoly-green/40"
+            className="px-3 py-3 rounded-xl bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 font-bold hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors border border-amber-500/40 dark:border-amber-500/50"
           >
             K
           </button>
         </div>
       </div>
-      <p className="text-xs text-gray-500 dark:text-gray-400">הסכום חייב להיות בין 0 ל-20M</p>
-      <p className={`text-sm font-medium py-2 px-3 rounded-lg tabular-nums ${parsed != null ? "bg-monopoly-green/10 dark:bg-monopoly-green/20 text-monopoly-green-dark dark:text-monopoly-green-light" : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"}`}>
+      <p className="text-xs text-slate-500 dark:text-gray-400">הסכום חייב להיות בין 0 ל-20M</p>
+      <p className={`text-sm font-medium py-2 px-3 rounded-lg tabular-nums ${parsed != null ? "bg-amber-50 dark:bg-green-900/30 text-amber-700 dark:text-yellow-400" : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-gray-400"}`}>
         {previewText}
       </p>
     </div>

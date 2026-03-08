@@ -25,10 +25,10 @@ html {
   width: 6px;
 }
 .ledger-scroll::-webkit-scrollbar-track {
-  @apply bg-monopoly-light-card dark:bg-monopoly-dark-card rounded;
+  @apply bg-white dark:bg-slate-800 rounded;
 }
 .ledger-scroll::-webkit-scrollbar-thumb {
-  @apply bg-monopoly-green rounded;
+  @apply bg-amber-500/40 dark:bg-amber-500/50 rounded;
 }
 
 /* Confetti canvas must not block clicks */

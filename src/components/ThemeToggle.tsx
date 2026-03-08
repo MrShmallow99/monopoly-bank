@@ -13,7 +13,7 @@ export function ThemeToggle() {
     return (
       <button
         type="button"
-        className="p-2 rounded-xl bg-monopoly-dark-card dark:bg-monopoly-dark-card border border-monopoly-green/30 dark:border-monopoly-green/30 text-gray-500 w-10 h-10"
+        className="p-2 rounded-xl bg-white dark:bg-slate-800 border border-amber-500/40 dark:border-amber-500/50 text-amber-700 dark:text-gray-400 w-10 h-10 shadow-sm"
         aria-label="מצב תצוגה"
       >
         <span className="text-lg">◐</span>
@@ -27,7 +27,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="p-2 rounded-xl bg-monopoly-light-card dark:bg-monopoly-dark-card border border-monopoly-light-border dark:border-monopoly-green/30 text-monopoly-green dark:text-monopoly-gold hover:bg-monopoly-light-border/50 dark:hover:bg-monopoly-green/20 transition-colors w-10 h-10 flex items-center justify-center"
+      className="p-2 rounded-xl bg-white dark:bg-slate-800 border border-amber-500/40 dark:border-amber-500/50 text-amber-700 dark:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-10 h-10 flex items-center justify-center shadow-sm dark:shadow-none"
       aria-label={isDark ? "מעבר למצב בהיר" : "מעבר למצב כהה"}
       title={isDark ? "מצב בהיר" : "מצב כהה"}
     >

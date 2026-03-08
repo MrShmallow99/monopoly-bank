@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="he" dir="rtl" className={assistant.variable} suppressHydrationWarning>
-      <body className={`${assistant.className} font-sans bg-monopoly-light-bg dark:bg-monopoly-dark text-gray-900 dark:text-white antialiased min-h-screen transition-colors`}>
+      <body className={`${assistant.className} font-sans bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-gray-100 antialiased min-h-screen transition-colors`}>
         <ThemeProvider>
           {children}
           <Toaster dir="rtl" position="top-center" richColors duration={3000} />
