@@ -115,7 +115,7 @@ export default function RoomPage() {
           if (payload.eventType === "INSERT" && payload.new) {
             const tx = payload.new as Transaction;
             setTransactions((prev) => [tx, ...prev].slice(0, 50));
-            if (tx.to_player === playerId) {
+            if (tx.to_player === playerId && tx.description !== "פשיטת רגל") {
               playTransferPlus();
             }
           }
