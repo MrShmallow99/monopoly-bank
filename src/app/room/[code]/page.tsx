@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Player, Room, Transaction } from "@/lib/database.types";
@@ -18,6 +18,7 @@ import { Users, Volume2, VolumeX } from "lucide-react";
 export default function RoomPage() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const code = typeof params.code === "string" ? params.code : "";
   const playerId = searchParams.get("player");
 
@@ -129,6 +130,14 @@ export default function RoomPage() {
               toast.success(`${newPlayer.name} הצטרף/ה למשחק! 🎉`, { duration: 3000 });
             }
           }
+          if (payload.eventType === "DELETE" && payload.old) {
+            const deleted = payload.old as { id: string };
+            setPlayers((prev) => prev.filter((p) => p.id !== deleted.id));
+            if (deleted.id === playerId) {
+              toast.error("הוסרת מהחדר על ידי המנהל");
+              router.push("/");
+            }
+          }
         }
       )
       .on(
@@ -146,7 +155,7 @@ export default function RoomPage() {
     return () => {
       supabase?.removeChannel(sub);
     };
-  }, [room?.id, playerId]);
+  }, [room?.id, playerId, router]);
 
   if (loading) {
     return (
@@ -252,7 +261,16 @@ export default function RoomPage() {
       )}
 
       {showPlayersModal && (
-        <PlayersModal players={players} onClose={() => setShowPlayersModal(false)} />
+        <PlayersModal
+          players={players}
+          currentPlayerId={player.id}
+          isBanker={isBanker}
+          onClose={() => setShowPlayersModal(false)}
+          onKickPlayer={async (id) => {
+            if (!supabase) return;
+            await supabase.from("players").delete().eq("id", id);
+          }}
+        />
       )}
 
       {showEndGameConfirm && (
