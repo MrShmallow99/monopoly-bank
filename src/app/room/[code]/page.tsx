@@ -6,14 +6,14 @@ import { supabase } from "@/lib/supabase";
 import type { Player, Room, Transaction } from "@/lib/database.types";
 import { formatAmount, formatAmountExact } from "@/lib/currency";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { PlayerJoinedToast } from "@/components/PlayerJoinedToast";
+import { toast } from "sonner";
 import { DashboardActions } from "./DashboardActions";
 import { Ledger } from "./Ledger";
 import { GameOverModal } from "./GameOverModal";
-import { PlayersModal, UsersIcon } from "./PlayersModal";
+import { PlayersModal } from "./PlayersModal";
 import { playTransferPlus } from "@/lib/sounds";
 import { useSoundPreference } from "@/hooks/useSoundPreference";
-import { Volume2, VolumeX } from "lucide-react";
+import { Users, Volume2, VolumeX } from "lucide-react";
 
 export default function RoomPage() {
   const params = useParams();
@@ -29,7 +29,6 @@ export default function RoomPage() {
   const [error, setError] = useState("");
   const [showEndGameConfirm, setShowEndGameConfirm] = useState(false);
   const [endGameLoading, setEndGameLoading] = useState(false);
-  const [playerJoinedToast, setPlayerJoinedToast] = useState<string | null>(null);
   const [showPlayersModal, setShowPlayersModal] = useState(false);
   const [soundEnabled, setSoundEnabled, soundMounted] = useSoundPreference();
 
@@ -127,7 +126,7 @@ export default function RoomPage() {
             const newPlayer = payload.new as Player;
             setPlayers((prev) => [...prev, newPlayer]);
             if (newPlayer.id !== playerId) {
-              setPlayerJoinedToast(`${newPlayer.name} הצטרף/ה למשחק! 🎉`);
+              toast.success(`${newPlayer.name} הצטרף/ה למשחק! 🎉`, { duration: 3000 });
             }
           }
         }
@@ -190,7 +189,17 @@ export default function RoomPage() {
     <main className="min-h-screen flex flex-col bg-monopoly-light-bg dark:bg-monopoly-dark pb-safe">
       <header className="bg-monopoly-light-card dark:bg-monopoly-dark-card border-b border-monopoly-light-border dark:border-monopoly-green/30 px-4 py-4 safe-top">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-500 dark:text-gray-400 text-sm">חדר #{room.code}</span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowPlayersModal(true)}
+              className="p-2 rounded-lg border border-monopoly-light-border dark:border-monopoly-green/40 text-gray-600 dark:text-gray-400 hover:bg-monopoly-light-bg dark:hover:bg-monopoly-green/10 transition-colors"
+              aria-label="שחקנים בחדר"
+            >
+              <Users className="w-5 h-5" />
+            </button>
+            <span className="text-gray-500 dark:text-gray-400 text-sm">חדר #{room.code}</span>
+          </div>
           <div className="flex items-center gap-2">
             <button
               type="button"

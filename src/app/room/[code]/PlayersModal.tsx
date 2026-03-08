@@ -1,22 +1,12 @@
 "use client";
 
+import { Crown } from "lucide-react";
 import type { Player } from "@/lib/database.types";
 
 type Props = {
   players: Player[];
   onClose: () => void;
 };
-
-function UsersIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  );
-}
 
 export function PlayersModal({ players, onClose }: Props) {
   return (
@@ -44,7 +34,8 @@ export function PlayersModal({ players, onClose }: Props) {
             >
               <span className="font-medium text-gray-900 dark:text-white">{p.name}</span>
               {p.is_banker && (
-                <span className="text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded" title="מנהל החדר">
+                <span className="flex items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded" title="מנהל החדר">
+                  <Crown className="w-3.5 h-3.5" aria-hidden />
                   מנהל
                 </span>
               )}
@@ -55,5 +46,3 @@ export function PlayersModal({ players, onClose }: Props) {
     </div>
   );
 }
-
-export { UsersIcon };
