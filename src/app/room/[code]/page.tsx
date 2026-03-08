@@ -195,66 +195,78 @@ export default function RoomPage() {
   }
 
   return (
-    <main className="h-svh min-h-0 flex flex-col bg-monopoly-light-bg dark:bg-monopoly-dark pb-safe overflow-hidden">
-      <header className="shrink-0 bg-monopoly-light-card dark:bg-monopoly-dark-card border-b border-monopoly-light-border dark:border-monopoly-green/30 px-3 py-3 sm:px-4 sm:py-4 safe-top">
-        <div className="flex justify-between items-center mb-1 sm:mb-2">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowPlayersModal(true)}
-              className="p-2 rounded-lg border border-monopoly-light-border dark:border-monopoly-green/40 text-gray-600 dark:text-gray-400 hover:bg-monopoly-light-bg dark:hover:bg-monopoly-green/10 transition-colors"
-              aria-label="שחקנים בחדר"
-            >
-              <Users className="w-5 h-5" />
-            </button>
-            <span className="text-gray-500 dark:text-gray-400 text-sm">חדר #{room.code}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className="p-2 rounded-lg border border-monopoly-light-border dark:border-monopoly-green/40 text-gray-600 dark:text-gray-400 hover:bg-monopoly-light-bg dark:hover:bg-monopoly-green/10 transition-colors"
-              aria-label={soundMounted ? (soundEnabled ? "כבה צלילים" : "הפעל צלילים") : "צלילים"}
-            >
-              {soundMounted ? (soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />) : <Volume2 className="w-5 h-5" />}
-            </button>
-            <ThemeToggle />
-            <span className="text-monopoly-green dark:text-monopoly-gold font-medium">{player.name}</span>
-            {isBanker && isGameActive && (
+    <main className="flex flex-col h-[100dvh] min-h-0 overflow-hidden bg-monopoly-light-bg dark:bg-monopoly-dark pb-safe">
+      <div className="shrink-0">
+        <header className="bg-monopoly-light-card dark:bg-monopoly-dark-card border-b border-monopoly-light-border dark:border-monopoly-green/30 px-3 py-3 sm:px-4 sm:py-4 safe-top">
+          <div className="flex justify-between items-center mb-1 sm:mb-2">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setShowEndGameConfirm(true)}
-                className="text-sm px-3 py-1 rounded-lg border border-amber-500/60 dark:border-amber-400/60 text-amber-700 dark:text-amber-400 hover:bg-amber-500/10 dark:hover:bg-amber-500/20 transition-colors"
+                onClick={() => setShowPlayersModal(true)}
+                className="p-2 rounded-lg border border-monopoly-light-border dark:border-monopoly-green/40 text-gray-600 dark:text-gray-400 hover:bg-monopoly-light-bg dark:hover:bg-monopoly-green/10 transition-colors"
+                aria-label="שחקנים בחדר"
               >
-                סיום משחק
+                <Users className="w-5 h-5" />
               </button>
-            )}
+              <span className="text-gray-500 dark:text-gray-400 text-sm">חדר #{room.code}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSoundEnabled(!soundEnabled)}
+                className="p-2 rounded-lg border border-monopoly-light-border dark:border-monopoly-green/40 text-gray-600 dark:text-gray-400 hover:bg-monopoly-light-bg dark:hover:bg-monopoly-green/10 transition-colors"
+                aria-label={soundMounted ? (soundEnabled ? "כבה צלילים" : "הפעל צלילים") : "צלילים"}
+              >
+                {soundMounted ? (soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />) : <Volume2 className="w-5 h-5" />}
+              </button>
+              <ThemeToggle />
+              <span className="text-monopoly-green dark:text-monopoly-gold font-medium">{player.name}</span>
+              {isBanker && isGameActive && (
+                <button
+                  type="button"
+                  onClick={() => setShowEndGameConfirm(true)}
+                  className="text-sm px-3 py-1 rounded-lg border border-amber-500/60 dark:border-amber-400/60 text-amber-700 dark:text-amber-400 hover:bg-amber-500/10 dark:hover:bg-amber-500/20 transition-colors"
+                >
+                  סיום משחק
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="text-center py-1.5 sm:py-2">
-          <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mb-0.5">יתרה נוכחית</p>
-          <p className="text-xl sm:text-2xl md:text-3xl font-bold text-monopoly-green dark:text-monopoly-green-light tabular-nums">
-            {formatAmountExact(player.balance)} <span className="text-lg text-gray-600 dark:text-gray-500 font-normal">ש&quot;ח</span>
-          </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-            ({formatAmount(player.balance)})
-          </p>
-        </div>
-      </header>
+          <div className="text-center py-1.5 sm:py-2">
+            <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mb-0.5">יתרה נוכחית</p>
+            <p className="text-xl sm:text-2xl md:text-3xl font-bold text-monopoly-green dark:text-monopoly-green-light tabular-nums">
+              {formatAmountExact(player.balance)} <span className="text-lg text-gray-600 dark:text-gray-500 font-normal">ש&quot;ח</span>
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+              ({formatAmount(player.balance)})
+            </p>
+          </div>
+        </header>
 
-      {error && (
-        <div className="shrink-0 mx-3 mt-1.5 sm:mt-2 sm:mx-4 rounded-xl bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">
-          {error}
-        </div>
-      )}
-      <section className="shrink-0 px-3 py-2 sm:p-4">
-        <DashboardActions
-          room={room}
-          currentPlayer={player}
+        {error && (
+          <div className="mx-3 mt-1.5 sm:mt-2 sm:mx-4 rounded-xl bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">
+            {error}
+          </div>
+        )}
+        <section className="px-3 py-2 sm:p-4">
+          <DashboardActions
+            room={room}
+            currentPlayer={player}
+            players={players}
+            onError={setError}
+          />
+        </section>
+      </div>
+
+      <div className="flex-1 min-h-0 flex flex-col">
+        <div className="flex-1 min-h-0" aria-hidden />
+        <Ledger
+          transactions={transactions}
           players={players}
-          onError={setError}
+          currentPlayerId={player.id}
+          className="shrink-0 max-h-full flex flex-col min-h-0 overflow-hidden"
         />
-      </section>
+      </div>
 
       {!isGameActive && (
         <GameOverModal players={players} />
