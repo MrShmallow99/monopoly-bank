@@ -6,9 +6,11 @@ import { supabase } from "@/lib/supabase";
 import type { Player, Room, Transaction } from "@/lib/database.types";
 import { formatAmount, formatAmountExact } from "@/lib/currency";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { PlayerJoinedToast } from "@/components/PlayerJoinedToast";
 import { DashboardActions } from "./DashboardActions";
 import { Ledger } from "./Ledger";
 import { GameOverModal } from "./GameOverModal";
+import { PlayersModal, UsersIcon } from "./PlayersModal";
 
 export default function RoomPage() {
   const params = useParams();
@@ -24,6 +26,8 @@ export default function RoomPage() {
   const [error, setError] = useState("");
   const [showEndGameConfirm, setShowEndGameConfirm] = useState(false);
   const [endGameLoading, setEndGameLoading] = useState(false);
+  const [playerJoinedToast, setPlayerJoinedToast] = useState<string | null>(null);
+  const [showPlayersModal, setShowPlayersModal] = useState(false);
 
   useEffect(() => {
     if (!code || !playerId) {
@@ -112,7 +116,11 @@ export default function RoomPage() {
             if (updated.id === playerId) setPlayer(updated);
           }
           if (payload.eventType === "INSERT" && payload.new) {
-            setPlayers((prev) => [...prev, payload.new as Player]);
+            const newPlayer = payload.new as Player;
+            setPlayers((prev) => [...prev, newPlayer]);
+            if (newPlayer.id !== playerId) {
+              setPlayerJoinedToast(`${newPlayer.name} הצטרף/ה למשחק! 🎉`);
+            }
           }
         }
       )
@@ -216,6 +224,10 @@ export default function RoomPage() {
 
       {!isGameActive && (
         <GameOverModal players={players} />
+      )}
+
+      {showPlayersModal && (
+        <PlayersModal players={players} onClose={() => setShowPlayersModal(false)} />
       )}
 
       {showEndGameConfirm && (
