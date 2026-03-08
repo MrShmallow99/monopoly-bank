@@ -61,7 +61,14 @@ function LedgerItem({
   const desc = tx.description || (fromName === BANK_LABEL ? `קבלה מ${BANK_LABEL}` : toName === BANK_LABEL ? `תשלום ל${BANK_LABEL}` : null);
 
   let text: string;
-  if (desc === "דרך צלחה") {
+  let styleClass = isIncoming ? "text-monopoly-green dark:text-monopoly-green-light" : isOutgoing ? "text-red-600 dark:text-red-300/90" : "text-gray-600 dark:text-gray-300";
+  if (desc === "פשיטת רגל") {
+    text = `🚨 ${toName} פשט/ה רגל`;
+    styleClass = "text-amber-600 dark:text-amber-400 font-medium";
+  } else if (desc === "הוחזר לחיים") {
+    text = `✨ ${toName} הוחזר/ה לחיים (${formatAmount(tx.amount)})`;
+    styleClass = "text-monopoly-green dark:text-monopoly-green-light font-medium";
+  } else if (desc === "דרך צלחה") {
     text = `${toName} קיבל/ה ${formatAmount(tx.amount)} (דרך צלחה)`;
   } else if (tx.from_player === getBankId() && tx.to_player !== getBankId()) {
     text = `${toName} קיבל/ה ${formatAmount(tx.amount)} מהבנק`;
@@ -73,9 +80,7 @@ function LedgerItem({
 
   return (
     <li
-      className={`px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm ${
-        isIncoming ? "text-monopoly-green dark:text-monopoly-green-light" : isOutgoing ? "text-red-600 dark:text-red-300/90" : "text-gray-600 dark:text-gray-300"
-      }`}
+      className={`px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm ${styleClass}`}
     >
       {text}
     </li>

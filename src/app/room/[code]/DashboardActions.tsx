@@ -141,14 +141,24 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         return;
       }
       const newSenderBalance = currentPlayer.balance - safeAmount;
+      const didAutoBankrupt = !allowDebt && newSenderBalance === 0;
       await supabase
         .from("players")
-        .update({ balance: newSenderBalance, ...(!allowDebt && newSenderBalance === 0 ? { is_bankrupt: true } : {}) })
+        .update({ balance: newSenderBalance, ...(didAutoBankrupt ? { is_bankrupt: true } : {}) })
         .eq("id", currentPlayer.id);
       await supabase
         .from("players")
         .update({ balance: toPlayer.balance + safeAmount })
         .eq("id", transferToId);
+      if (didAutoBankrupt) {
+        await supabase.from("transactions").insert({
+          room_id: roomId,
+          from_player: getBankId(),
+          to_player: currentPlayer.id,
+          amount: 1,
+          description: "פשיטת רגל",
+        });
+      }
       playTransferMinus();
       clearModal();
     } catch {
@@ -199,10 +209,20 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         return;
       }
       const newBalance = currentPlayer.balance - safeAmount;
+      const didAutoBankrupt = !allowDebt && newBalance === 0;
       await supabase
         .from("players")
-        .update({ balance: newBalance, ...(!allowDebt && newBalance === 0 ? { is_bankrupt: true } : {}) })
+        .update({ balance: newBalance, ...(didAutoBankrupt ? { is_bankrupt: true } : {}) })
         .eq("id", currentPlayer.id);
+      if (didAutoBankrupt) {
+        await supabase.from("transactions").insert({
+          room_id: roomId,
+          from_player: getBankId(),
+          to_player: currentPlayer.id,
+          amount: 1,
+          description: "פשיטת רגל",
+        });
+      }
       playTransferMinus();
       clearModal();
     } catch {
@@ -273,7 +293,16 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         .update({ balance: 0, is_bankrupt: true })
         .eq("id", currentPlayer.id);
       if (upErr) showErrorOnly("פעולת פשיטת רגל נכשלה. נסה שוב.");
-      else clearModal();
+      else {
+        await supabase.from("transactions").insert({
+          room_id: roomId,
+          from_player: getBankId(),
+          to_player: currentPlayer.id,
+          amount: 1,
+          description: "פשיטת רגל",
+        });
+        clearModal();
+      }
     } catch {
       showErrorOnly("פעולת פשיטת רגל נכשלה. נסה שוב.");
     } finally {
@@ -307,6 +336,13 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         .eq("room_id", roomId);
       if (upErr) showErrorOnly("ההחזרה לחיים נכשלה. נסה שוב.");
       else {
+        await supabase.from("transactions").insert({
+          room_id: roomId,
+          from_player: getBankId(),
+          to_player: targetPlayerId,
+          amount: strict.amount,
+          description: "הוחזר לחיים",
+        });
         setRevivePlayerId("");
         setReviveAmountStr("");
         setReviveValidationError("");

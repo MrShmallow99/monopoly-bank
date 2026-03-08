@@ -127,6 +127,15 @@ export default function RoomPage() {
         (payload) => {
           if (payload.eventType === "UPDATE" && payload.new) {
             const updated = { ...payload.new, is_bankrupt: (payload.new as Player).is_bankrupt ?? false } as Player;
+            const previous = payload.old as Player | undefined;
+            const wasBankrupt = previous?.is_bankrupt === true;
+            const isNowBankrupt = updated.is_bankrupt === true;
+            const name = updated.name ?? "שחקן";
+            if (!wasBankrupt && isNowBankrupt) {
+              toast(`🚨 ${name} פשט/ה רגל!`, { duration: 4000 });
+            } else if (wasBankrupt && !isNowBankrupt) {
+              toast.success(`✨ ${name} חזר/ה למשחק!`, { duration: 4000 });
+            }
             setPlayers((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
             if (updated.id === playerId) setPlayer(updated);
           }
