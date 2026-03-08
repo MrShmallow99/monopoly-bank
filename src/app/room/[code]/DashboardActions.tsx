@@ -29,13 +29,14 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
   const otherPlayers = players.filter((p) => p.id !== currentPlayer.id);
   const bankruptPlayers = players.filter((p) => p.is_bankrupt === true);
 
-  const [modal, setModal] = useState<"transfer" | "payBank" | "receiveBank" | "bankruptConfirm" | null>(null);
+  const [modal, setModal] = useState<"transfer" | "payBank" | "receiveBank" | "bankruptConfirm" | "revive" | null>(null);
   const [transferToId, setTransferToId] = useState("");
   const [amountStr, setAmountStr] = useState("");
   const [reviveAmountStr, setReviveAmountStr] = useState("");
   const [revivePlayerId, setRevivePlayerId] = useState("");
   const [transferValidationError, setTransferValidationError] = useState("");
   const [amountValidationError, setAmountValidationError] = useState("");
+  const [reviveValidationError, setReviveValidationError] = useState("");
   const [loading, setLoading] = useState(false);
 
   function clearModal() {
@@ -46,6 +47,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
     setRevivePlayerId("");
     setTransferValidationError("");
     setAmountValidationError("");
+    setReviveValidationError("");
     onError("");
   }
 
@@ -136,9 +138,10 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         showErrorOnly("ההעברה נכשלה. נסה שוב.");
         return;
       }
+      const newSenderBalance = currentPlayer.balance - safeAmount;
       await supabase
         .from("players")
-        .update({ balance: currentPlayer.balance - safeAmount })
+        .update({ balance: newSenderBalance, ...(!allowDebt && newSenderBalance === 0 ? { is_bankrupt: true } : {}) })
         .eq("id", currentPlayer.id);
       await supabase
         .from("players")
@@ -193,9 +196,10 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         showErrorOnly("התשלום נכשל. נסה שוב.");
         return;
       }
+      const newBalance = currentPlayer.balance - safeAmount;
       await supabase
         .from("players")
-        .update({ balance: currentPlayer.balance - safeAmount })
+        .update({ balance: newBalance, ...(!allowDebt && newBalance === 0 ? { is_bankrupt: true } : {}) })
         .eq("id", currentPlayer.id);
       playTransferMinus();
       clearModal();
@@ -303,6 +307,8 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       else {
         setRevivePlayerId("");
         setReviveAmountStr("");
+        setReviveValidationError("");
+        setModal(null);
       }
     } catch {
       showErrorOnly("ההחזרה לחיים נכשלה. נסה שוב.");
@@ -398,47 +404,20 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
             <div className="space-y-2">
               <p className="text-sm text-gray-600 dark:text-gray-400">החזר לחיים – שחקנים שפשטו רגל:</p>
               {bankruptPlayers.map((p) => (
-                <div key={p.id} className="flex flex-wrap items-center gap-2">
-                  <span className="text-gray-700 dark:text-gray-300">{p.name}</span>
-                  {revivePlayerId === p.id ? (
-                    <>
-                      <input
-                        type="text"
-                        placeholder="סכום (למשל 5M)"
-                        value={reviveAmountStr}
-                        onChange={(e) => setReviveAmountStr(e.target.value)}
-                        className="flex-1 min-w-[80px] rounded-lg bg-white dark:bg-monopoly-dark border border-monopoly-light-border dark:border-monopoly-green/50 px-3 py-2 text-sm text-gray-900 dark:text-white"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const amt = parseAmountInput(reviveAmountStr);
-                          if (amt != null && amt >= 0) handleRevive(p.id, amt);
-                          else onError("הזן סכום תקין (למשל 5M).");
-                        }}
-                        disabled={loading}
-                        className="px-3 py-2 rounded-lg bg-monopoly-green text-white text-sm font-medium disabled:opacity-50"
-                      >
-                        החזר לחיים
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { setRevivePlayerId(""); setReviveAmountStr(""); }}
-                        className="px-3 py-2 rounded-lg border border-gray-400 dark:border-gray-600 text-sm"
-                      >
-                        ביטול
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => { setRevivePlayerId(p.id); setReviveAmountStr("5M"); }}
-                      className="px-3 py-2 rounded-lg bg-monopoly-green/80 text-white text-sm font-medium hover:bg-monopoly-green"
-                    >
-                      החזר לחיים
-                    </button>
-                  )}
-                </div>
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => {
+                    playButton();
+                    setRevivePlayerId(p.id);
+                    setReviveAmountStr("5M");
+                    setReviveValidationError("");
+                    setModal("revive");
+                  }}
+                  className="w-full text-right px-3 py-2 rounded-lg bg-monopoly-green/80 text-white text-sm font-medium hover:bg-monopoly-green transition-colors"
+                >
+                  החזר לחיים – {p.name}
+                </button>
               ))}
             </div>
           )}
@@ -565,6 +544,57 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
                 className="flex-1 py-3 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-medium disabled:opacity-50"
               >
                 {loading ? "..." : "קבל"}
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Modal: Host Revive player */}
+      {modal === "revive" && revivePlayerId && (
+        <Modal title="החזר לחיים" onClose={clearModal}>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              סכום התחלתי לשחקן {bankruptPlayers.find((p) => p.id === revivePlayerId)?.name ?? ""}:
+            </p>
+            <SmartAmountInput
+              value={reviveAmountStr}
+              onChange={(v) => { setReviveAmountStr(v); setReviveValidationError(""); }}
+              onButtonClick={playButton}
+            />
+            {reviveValidationError && (
+              <p className="text-sm text-amber-600 dark:text-amber-400 font-medium" role="alert">
+                {reviveValidationError}
+              </p>
+            )}
+            <div className="flex gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => { playButton(); clearModal(); }}
+                className="flex-1 py-3 rounded-xl border border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                ביטול
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  playButton();
+                  const amt = parseAmountInput(reviveAmountStr);
+                  if (amt === null) {
+                    setReviveValidationError("הזן סכום תקין (למשל 5M)");
+                    return;
+                  }
+                  const strict = validateReviveAmount(amt);
+                  if (!strict.valid) {
+                    setReviveValidationError(strict.error);
+                    return;
+                  }
+                  handleRevive(revivePlayerId, strict.amount);
+                }}
+                disabled={loading}
+                className="flex-1 py-3 rounded-xl bg-monopoly-green hover:bg-monopoly-green-light text-white font-medium disabled:opacity-50"
+              >
+                {loading ? "..." : "החזר לחיים"}
               </button>
             </div>
           </div>

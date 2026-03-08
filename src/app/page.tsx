@@ -236,7 +236,7 @@ export default function HomePage() {
         </div>
 
         <p className="text-center text-gray-600 dark:text-gray-500 text-sm">
-          המטבע: ש&quot;ח • יתרה התחלתית 15M • מקסימום 20M
+          המטבע: ש&quot;ח • יתרה התחלתית 15M • מקסימום העברה 20M
         </p>
       </div>
     </main>
