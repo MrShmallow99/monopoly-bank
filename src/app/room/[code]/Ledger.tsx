@@ -2,6 +2,7 @@
 
 import type { Player, Transaction } from "@/lib/database.types";
 import { formatAmount, getBankId } from "@/lib/currency";
+import { sanitizeDisplayText } from "@/lib/sanitize";
 
 type Props = {
   transactions: Transaction[];
@@ -15,7 +16,8 @@ const BANK_LABEL = "הבנק";
 export function Ledger({ transactions, players, currentPlayerId, className }: Props) {
   const getPlayerName = (id: string) => {
     if (id === getBankId()) return BANK_LABEL;
-    return players.find((p) => p.id === id)?.name ?? "שחקן";
+    const name = players.find((p) => p.id === id)?.name ?? "שחקן";
+    return sanitizeDisplayText(name);
   };
 
   return (

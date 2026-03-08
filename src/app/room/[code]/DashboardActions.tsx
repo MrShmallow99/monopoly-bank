@@ -8,6 +8,8 @@ import {
   formatAmountExact,
   parseAmountInput,
   validateAmount,
+  validateTransactionAmount,
+  validateReviveAmount,
   PASS_GO_AMOUNT,
   getBankId,
 } from "@/lib/currency";
@@ -97,10 +99,15 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
     }
     const validation = validateAmount(amount);
     if (!validation.valid) {
-      setAmountValidationError("הסכום חורג מהמגבלות");
+      setAmountValidationError(validation.error);
       return;
     }
-    if (!allowDebt && currentPlayer.balance < amount) {
+    const strict = validateTransactionAmount(amount);
+    if (!strict.valid) {
+      setAmountValidationError(strict.error);
+      return;
+    }
+    if (!allowDebt && currentPlayer.balance < strict.amount) {
       setAmountValidationError("אין מספיק יתרה. במשחק זה לא ניתן להיכנס למינוס.");
       return;
     }
@@ -109,6 +116,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       setAmountValidationError("שחקן לא נמצא.");
       return;
     }
+    const safeAmount = strict.amount;
     setAmountValidationError("");
     setLoading(true);
     onError("");
@@ -121,7 +129,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         room_id: roomId,
         from_player: currentPlayer.id,
         to_player: transferToId,
-        amount,
+        amount: safeAmount,
         description: null,
       });
       if (txErr) {
@@ -130,11 +138,11 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       }
       await supabase
         .from("players")
-        .update({ balance: currentPlayer.balance - amount })
+        .update({ balance: currentPlayer.balance - safeAmount })
         .eq("id", currentPlayer.id);
       await supabase
         .from("players")
-        .update({ balance: toPlayer.balance + amount })
+        .update({ balance: toPlayer.balance + safeAmount })
         .eq("id", transferToId);
       playTransferMinus();
       clearModal();
@@ -153,13 +161,19 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
     }
     const validation = validateAmount(amount);
     if (!validation.valid) {
-      setAmountValidationError("הסכום חורג מהמגבלות");
+      setAmountValidationError(validation.error);
       return;
     }
-    if (!allowDebt && currentPlayer.balance < amount) {
+    const strict = validateTransactionAmount(amount);
+    if (!strict.valid) {
+      setAmountValidationError(strict.error);
+      return;
+    }
+    if (!allowDebt && currentPlayer.balance < strict.amount) {
       setAmountValidationError("אין מספיק יתרה. במשחק זה לא ניתן להיכנס למינוס.");
       return;
     }
+    const safeAmount = strict.amount;
     setAmountValidationError("");
     setLoading(true);
     onError("");
@@ -172,7 +186,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         room_id: roomId,
         from_player: currentPlayer.id,
         to_player: getBankId(),
-        amount,
+        amount: safeAmount,
         description: "תשלום לבנק",
       });
       if (txErr) {
@@ -181,7 +195,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       }
       await supabase
         .from("players")
-        .update({ balance: currentPlayer.balance - amount })
+        .update({ balance: currentPlayer.balance - safeAmount })
         .eq("id", currentPlayer.id);
       playTransferMinus();
       clearModal();
@@ -200,9 +214,15 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
     }
     const validation = validateAmount(amount);
     if (!validation.valid) {
-      setAmountValidationError("הסכום חורג מהמגבלות");
+      setAmountValidationError(validation.error);
       return;
     }
+    const strict = validateTransactionAmount(amount);
+    if (!strict.valid) {
+      setAmountValidationError(strict.error);
+      return;
+    }
+    const safeAmount = strict.amount;
     setAmountValidationError("");
     setLoading(true);
     onError("");
@@ -215,7 +235,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
         room_id: roomId,
         from_player: getBankId(),
         to_player: currentPlayer.id,
-        amount,
+        amount: safeAmount,
         description: "קבלה מהבנק",
       });
       if (txErr) {
@@ -224,7 +244,7 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       }
       await supabase
         .from("players")
-        .update({ balance: currentPlayer.balance + amount })
+        .update({ balance: currentPlayer.balance + safeAmount })
         .eq("id", currentPlayer.id);
       clearModal();
     } catch {
@@ -255,7 +275,18 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
     }
   }
 
-  async function handleRevive(playerId: string, amount: number) {
+  async function handleRevive(targetPlayerId: string, amount: number) {
+    if (!currentPlayer.is_banker) return;
+    const target = bankruptPlayers.find((p) => p.id === targetPlayerId);
+    if (!target) {
+      onError("שחקן לא נמצא או לא במצב פשיטת רגל.");
+      return;
+    }
+    const strict = validateReviveAmount(amount);
+    if (!strict.valid) {
+      onError(strict.error);
+      return;
+    }
     setLoading(true);
     onError("");
     try {
@@ -265,8 +296,9 @@ export function DashboardActions({ room, currentPlayer, players, onError }: Prop
       }
       const { error: upErr } = await supabase
         .from("players")
-        .update({ balance: amount, is_bankrupt: false })
-        .eq("id", playerId);
+        .update({ balance: strict.amount, is_bankrupt: false })
+        .eq("id", targetPlayerId)
+        .eq("room_id", roomId);
       if (upErr) showErrorOnly("ההחזרה לחיים נכשלה. נסה שוב.");
       else {
         setRevivePlayerId("");

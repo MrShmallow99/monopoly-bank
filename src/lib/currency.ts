@@ -59,11 +59,43 @@ export function parseAmountInput(input: string): number | null {
 export function validateAmount(
   amount: number
 ): { valid: true } | { valid: false; error: string } {
-  if (amount <= MIN_TRANSACTION) {
-    return { valid: false, error: "הסכום חייב להיות גדול מ-0" };
+  if (!Number.isSafeInteger(amount) || amount <= MIN_TRANSACTION) {
+    return { valid: false, error: "הסכום חייב להיות מספר שלם גדול מ-0" };
   }
   if (amount > MAX_TRANSACTION) {
     return { valid: false, error: `הסכום המקסימלי הוא ${formatAmount(MAX_TRANSACTION)} (20M)` };
   }
   return { valid: true };
+}
+
+/**
+ * Strict validation for transaction amount before DB insert (defense against tampering).
+ * Returns the same shape as validateAmount.
+ */
+export function validateTransactionAmount(
+  amount: unknown
+): { valid: true; amount: number } | { valid: false; error: string } {
+  if (typeof amount !== "number" || !Number.isSafeInteger(amount)) {
+    return { valid: false, error: "סכום לא תקין" };
+  }
+  if (amount <= 0) {
+    return { valid: false, error: "הסכום חייב להיות גדול מ-0" };
+  }
+  if (amount > MAX_TRANSACTION) {
+    return { valid: false, error: `הסכום המקסימלי הוא ${formatAmount(MAX_TRANSACTION)}` };
+  }
+  return { valid: true, amount };
+}
+
+/** Validate revive balance amount (must be non-negative integer). */
+export function validateReviveAmount(
+  amount: unknown
+): { valid: true; amount: number } | { valid: false; error: string } {
+  if (typeof amount !== "number" || !Number.isSafeInteger(amount) || amount < 0) {
+    return { valid: false, error: "סכום לא תקין" };
+  }
+  if (amount > MAX_TRANSACTION) {
+    return { valid: false, error: `הסכום המקסימלי הוא ${formatAmount(MAX_TRANSACTION)}` };
+  }
+  return { valid: true, amount };
 }

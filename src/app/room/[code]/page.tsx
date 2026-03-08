@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Player, Room, Transaction } from "@/lib/database.types";
 import { formatAmount, formatAmountExact } from "@/lib/currency";
+import { getRoomPlayerId } from "@/lib/roomSession";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { toast } from "sonner";
 import { DashboardActions } from "./DashboardActions";
@@ -35,8 +36,13 @@ export default function RoomPage() {
 
   useEffect(() => {
     if (!code || !playerId) {
-      setError("חסר קוד חדר או שחקן. חזור לדף הבית.");
-      setLoading(false);
+      router.replace("/");
+      return;
+    }
+
+    const storedPlayerId = getRoomPlayerId(code);
+    if (storedPlayerId === null || storedPlayerId !== playerId) {
+      router.replace("/");
       return;
     }
 
@@ -52,15 +58,9 @@ export default function RoomPage() {
         .eq("code", code)
         .single();
       if (roomErr || !roomData) {
-        setError("חדר לא נמצא.");
-        setLoading(false);
+        router.replace("/");
         return;
       }
-      setRoom({
-        ...roomData,
-        allow_debt: roomData.allow_debt ?? false,
-        is_active: roomData.is_active ?? true,
-      } as Room);
 
       const { data: playerData, error: playerErr } = await supabase
         .from("players")
@@ -69,10 +69,15 @@ export default function RoomPage() {
         .eq("room_id", roomData.id)
         .single();
       if (playerErr || !playerData) {
-        setError("שחקן לא נמצא בחדר זה.");
-        setLoading(false);
+        router.replace("/");
         return;
       }
+
+      setRoom({
+        ...roomData,
+        allow_debt: roomData.allow_debt ?? false,
+        is_active: roomData.is_active ?? true,
+      } as Room);
       setPlayer({ ...playerData, is_bankrupt: playerData.is_bankrupt ?? false } as Player);
 
       const { data: playersData } = await supabase
@@ -93,7 +98,7 @@ export default function RoomPage() {
     }
 
     load();
-  }, [code, playerId]);
+  }, [code, playerId, router]);
 
   useEffect(() => {
     if (!room?.id) return;

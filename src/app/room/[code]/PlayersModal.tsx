@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Crown, UserMinus } from "lucide-react";
 import type { Player } from "@/lib/database.types";
+import { sanitizeDisplayText } from "@/lib/sanitize";
 
 type Props = {
   players: Player[];
@@ -52,7 +53,7 @@ export function PlayersModal({ players, currentPlayerId, isBanker, onClose, onKi
                 key={p.id}
                 className="flex items-center gap-2 py-2 px-3 rounded-xl bg-monopoly-light-bg dark:bg-monopoly-dark border border-monopoly-light-border dark:border-monopoly-green/20"
               >
-                <span className="font-medium text-gray-900 dark:text-white flex-1 min-w-0">{p.name}</span>
+                <span className="font-medium text-gray-900 dark:text-white flex-1 min-w-0">{sanitizeDisplayText(p.name)}</span>
                 {p.is_banker && (
                   <span className="flex items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded shrink-0" title="מנהל החדר">
                     <Crown className="w-3.5 h-3.5" aria-hidden />
@@ -84,7 +85,7 @@ export function PlayersModal({ players, currentPlayerId, isBanker, onClose, onKi
           >
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">הסרת שחקן</h3>
             <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">
-              האם אתה בטוח שברצונך להסיר את {playerToKick.name} מהחדר?
+              האם אתה בטוח שברצונך להסיר את {sanitizeDisplayText(playerToKick.name)} מהחדר?
             </p>
             <div className="flex gap-2">
               <button

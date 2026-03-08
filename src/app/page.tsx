@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { setRoomPlayerId } from "@/lib/roomSession";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useSoundPreference } from "@/hooks/useSoundPreference";
 
@@ -70,6 +71,7 @@ export default function HomePage() {
         setLoading(null);
         return;
       }
+      setRoomPlayerId(code, player.id);
       router.push(`/room/${code}?player=${player.id}`);
     } catch {
       setError("משהו השתבש. נסה שוב.");
@@ -108,12 +110,13 @@ export default function HomePage() {
         })
         .select("id")
         .single();
-      if (playerErr) {
-        if (playerErr.code === "23505") setError("שם זה כבר תפוס בחדר זה.");
+      if (playerErr || !player) {
+        if (playerErr?.code === "23505") setError("שם זה כבר תפוס בחדר זה.");
         else setError("הצטרפות נכשלה. נסה שוב.");
         setLoading(null);
         return;
       }
+      setRoomPlayerId(code, player!.id);
       router.push(`/room/${code}?player=${player!.id}`);
     } catch {
       setError("משהו השתבש. נסה שוב.");
