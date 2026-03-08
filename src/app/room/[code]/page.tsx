@@ -164,6 +164,14 @@ export default function RoomPage() {
     };
   }, [room?.id, playerId, router]);
 
+  useEffect(() => {
+    if (!room || !player) return;
+    if (room.is_active !== false) return;
+    if (winConfettiFired.current) return;
+    winConfettiFired.current = true;
+    fireWinConfetti();
+  }, [room, player]);
+
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center p-4 bg-monopoly-light-bg dark:bg-monopoly-dark">
@@ -189,14 +197,6 @@ export default function RoomPage() {
   const otherPlayers = players.filter((p) => p.id !== player.id);
   const isGameActive = room.is_active !== false;
   const isBanker = player.is_banker === true;
-
-  useEffect(() => {
-    if (!room || !player) return;
-    if (room.is_active !== false) return;
-    if (winConfettiFired.current) return;
-    winConfettiFired.current = true;
-    fireWinConfetti();
-  }, [room, player]);
 
   async function confirmEndGame() {
     if (!supabase || !room?.id) return;
